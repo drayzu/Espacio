@@ -1,0 +1,135 @@
+.hud {
+  position: fixed;
+  left: 32px;
+  bottom: 32px;
+  pointer-events: none;
+}
+
+#name {
+  min-height: 1.3em;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 26px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.6s, transform 0.6s;
+}
+
+#name.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+#fact {
+  min-height: 1.4em;
+  margin: 2px 0 14px;
+  max-width: 420px;
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--dim);
+  opacity: 0;
+  transition: opacity 0.8s 0.15s;
+}
+
+#fact.is-in {
+  opacity: 1;
+}
+
+#exp {
+  font-family: var(--serif);
+  font-size: 76px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+#exp .m {
+  font-size: 30px;
+  color: var(--dim);
+}
+
+#unit {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--dim);
+}
+
+#ruler {
+  position: fixed;
+  right: 44px;
+  top: 20vh;
+  bottom: 20vh;
+  width: 1px;
+  background: var(--faint);
+}
+
+.tick {
+  position: absolute;
+  right: 0;
+  width: 7px;
+  height: 1px;
+  background: var(--dim);
+}
+
+.tick--named {
+  width: 14px;
+  background: var(--ink);
+  cursor: pointer;
+}
+
+.tick--named span {
+  position: absolute;
+  right: 22px;
+  top: -0.65em;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.tick--named:hover span {
+  color: var(--ink);
+}
+
+#marker {
+  position: absolute;
+  right: -8px;
+  width: 30px;
+  height: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+#marker::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.hint {
+  transition: opacity 1s;
+}
+
+.hint.is-gone {
+  opacity: 0;
+}
+
+@media (max-width: 720px) {
+  #exp {
+    font-size: 54px;
+  }
+  #ruler {
+    right: 20px;
+  }
+  .tick--named span {
+    display: none;
+  }
+}
