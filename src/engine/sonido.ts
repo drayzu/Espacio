@@ -1,18 +1,16 @@
 import { clamp } from '../lib/math';
 
 /**
- * Sound: an ambient score made in the browser, with no files. Off until asked for (browsers need
- * a gesture first, and silence is the polite default).
+ * Sound: made in the browser, with no files. Off until asked for (browsers need a gesture first,
+ * and silence is the polite default). No music: the journey's own sounds only.
  *
- * - A drone of four voices whose root follows the scale: glassy among quarks, deep among the
- *   galaxies (about 260 Hz at Planck's length, about 40 Hz at the multiverse).
- * - Each world has its own chord; the voices glide to it as the journey crosses into the world.
  * - Wind: filtered noise that rises with the speed of the zoom.
- * - A soft bell when a world's name appears.
- * - All of it through a long generated reverb, and every voice breathes slowly.
+ * - A soft bell when a world's name appears, pitched by the scale (high among quarks, low among
+ *   the galaxies) and by each world's chord.
+ * - Both through a long generated reverb.
  */
 
-/** Open voicings (semitones over the root), one per world in turn. */
+/** Open voicings (semitones over the root), one per world in turn: the bell takes a note from it. */
 const CHORDS = [
   [0, 7, 12, 19],
   [0, 5, 12, 17],
@@ -42,7 +40,7 @@ function noise(ctx: BaseAudioContext, seconds: number) {
   return buf;
 }
 
-/** The drone's root for scale exponent `e`. */
+/** The bell's root for scale exponent `e`. */
 const rootOf = (e: number) => 110 * Math.pow(2, (-e - 4) * 0.042);
 
 interface Graph {
@@ -50,8 +48,6 @@ interface Graph {
   master: GainNode;
   /** Where sounds go: dry and into the reverb. */
   bus: GainNode;
-  tone: BiquadFilterNode;
-  voices: { oscs: OscillatorNode[]; gain: GainNode }[];
   wind: GainNode;
   windBand: BiquadFilterNode;
 }
@@ -71,37 +67,6 @@ export function buildSound(ctx: BaseAudioContext): Graph {
   bus.connect(master);
   bus.connect(reverb);
 
-  // The drone, darkened by a low-pass that opens while zooming.
-  const tone = ctx.createBiquadFilter();
-  tone.type = 'lowpass';
-  tone.frequency.value = 900;
-  tone.Q.value = 0.4;
-  const droneGain = ctx.createGain();
-  droneGain.gain.value = 0.16;
-  tone.connect(droneGain).connect(bus);
-
-  const voices = CHORDS[0].map((_, i) => {
-    const gain = ctx.createGain();
-    gain.gain.value = i === 0 ? 0.32 : 0.2;
-    gain.connect(tone);
-    // Slow breathing, a different period per voice.
-    const lfo = ctx.createOscillator();
-    lfo.frequency.value = 0.045 + i * 0.017;
-    const depth = ctx.createGain();
-    depth.gain.value = 0.08;
-    lfo.connect(depth).connect(gain.gain);
-    lfo.start();
-    // Two slightly detuned oscillators per voice.
-    const oscs = [-4, 4].map((cents) => {
-      const o = ctx.createOscillator();
-      o.type = i % 2 ? 'triangle' : 'sine';
-      o.detune.value = cents;
-      o.connect(gain);
-      o.start();
-      return o;
-    });
-    return { oscs, gain };
-  });
 
   // Wind.
   const src = ctx.createBufferSource();
@@ -116,7 +81,7 @@ export function buildSound(ctx: BaseAudioContext): Graph {
   src.connect(windBand).connect(wind).connect(bus);
   src.start();
 
-  return { ctx, master, bus, tone, voices, wind, windBand };
+  return { ctx, master, bus, wind, windBand };
 }
 
 export function createSound() {
@@ -166,15 +131,8 @@ export function createSound() {
       if (now - last < 50) return;
       last = now;
       root = rootOf(e);
-      const k = world % CHORDS.length;
-      const glideT = k !== chord ? 0.9 : 0.25;
-      chord = k;
-      g.voices.forEach((v, i) => {
-        const f = root * Math.pow(2, CHORDS[k][i] / 12);
-        for (const o of v.oscs) glide(o.frequency, f, glideT);
-      });
+      chord = world % CHORDS.length;
       const s = Math.abs(speed);
-      glide(g.tone.frequency, 700 + clamp(s, 0, 8) * 450, 0.2);
       glide(g.wind.gain, Math.pow(clamp(s / 6, 0, 1), 1.4) * 0.32, 0.15);
       glide(g.windBand.frequency, 350 + clamp(s, 0, 10) * 220, 0.2);
     },

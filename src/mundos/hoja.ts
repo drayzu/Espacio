@@ -117,7 +117,8 @@ export function hoja(): WorldModule {
         for (const s of [1, -1]) {
           for (let k = 0; k < 10; k++) {
             const x0 = -33 + k * 7;
-            const L = 15 + k * 0.3;
+            // Towards the tip they shorten, so none runs past it.
+            const L = Math.min(15 + k * 0.3, 36 - x0);
             const p0: P2 = [x0, 0];
             const p1: P2 = [x0 + 0.45 * L, s * 0.72 * halfWidth(x0 + 6)];
             const p2: P2 = [x0 + L, s * 0.9 * halfWidth(x0 + L)];
@@ -199,7 +200,7 @@ export function hoja(): WorldModule {
         for (const sd of [1, -1]) {
           secs[sd].forEach((fv, k) => {
             const x0 = -33 + k * 7;
-            const L = (15 + k * 0.3) * 1.2;
+            const L = Math.min(15 + k * 0.3, 36 - x0) * 1.2;
             for (let j = 0; j < 160; j++) {
               const t = r();
               const [x, y] = fv(t);

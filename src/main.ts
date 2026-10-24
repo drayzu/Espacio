@@ -164,6 +164,7 @@ const alphaOf = (id: string) => alphas.get(id) ?? 0;
 
 let last = performance.now();
 let prevE = tl.get('e', 0);
+let prevP = 0;
 function step(now: number) {
   const dt = Math.min((now - last) / 1000, 0.1);
   last = now;
@@ -232,7 +233,9 @@ function step(now: number) {
   const a = chain.worlds[chain.segment];
   const b = chain.worlds[chain.segment + 1];
   tint.setHex(a.tint).lerp(tintB.setHex(b.tint), chain.blend);
-  dust.update(e, zoomSpeed, innerWidth / innerHeight, tint);
+  const scrollSpeed = (p - prevP) / Math.max(dt, 1e-3);
+  prevP = p;
+  dust.update(e + 0.4 * p, Math.abs(zoomSpeed) + 0.9 * Math.abs(scrollSpeed), innerWidth / innerHeight, tint);
   hud.update(e, p, scroll.playing, e + Math.log10(fit));
   sound.update(e, zoomSpeed, chain.segment + (chain.blend > 0.5 ? 1 : 0));
 

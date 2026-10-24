@@ -6,7 +6,8 @@ import { clamp, damp } from '../lib/math';
  * after the scroll position.
  */
 
-const PX_PER_BEAT = 640;
+// How much page one beat takes: smaller, each turn of the wheel or swipe carries further.
+const PX_PER_BEAT = 460;
 
 export function createScroll(spacer: HTMLElement, length: number) {
   spacer.style.height = `${length * PX_PER_BEAT + innerHeight}px`;
@@ -75,7 +76,8 @@ export function createScroll(spacer: HTMLElement, length: number) {
         if (next >= length) autoplay = false;
       }
       read();
-      p = damp(p, target, 3.2, dt);
+      // Follows the hand closely (a long glide reads as lag), still smoothing a wheel's steps.
+      p = damp(p, target, 4.6, dt);
       return p;
     },
   };
