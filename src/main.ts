@@ -105,7 +105,9 @@ tl.wait(1.2);
 
 const scroll = createScroll(document.querySelector<HTMLElement>('#spacer')!, tl.length);
 const dust = createScaleDust(post.dpr);
-scene.add(dust.points);
+// For comparing: `?polvo=antes` streams the dust with the zoom only (as it was), `?polvo=no` hides it.
+const DUST = new URLSearchParams(location.search).get('polvo') === 'antes' ? 'zoom' : 'scroll';
+if (new URLSearchParams(location.search).get('polvo') !== 'no') scene.add(dust.points);
 const sound = createSound();
 const lamina = createLamina(chain.worlds, camera);
 // `?lamina` opens the page with the plate layer on.
@@ -235,7 +237,8 @@ function step(now: number) {
   tint.setHex(a.tint).lerp(tintB.setHex(b.tint), chain.blend);
   const scrollSpeed = (p - prevP) / Math.max(dt, 1e-3);
   prevP = p;
-  dust.update(e + 0.4 * p, Math.abs(zoomSpeed) + 0.9 * Math.abs(scrollSpeed), innerWidth / innerHeight, tint);
+  if (DUST === 'zoom') dust.update(e, zoomSpeed, innerWidth / innerHeight, tint);
+  else dust.update(e + 0.4 * p, Math.abs(zoomSpeed) + 0.9 * Math.abs(scrollSpeed), innerWidth / innerHeight, tint);
   hud.update(e, p, scroll.playing, e + Math.log10(fit));
   sound.update(e, zoomSpeed, chain.segment + (chain.blend > 0.5 ? 1 : 0));
 
