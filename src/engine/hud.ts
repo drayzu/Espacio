@@ -1,5 +1,6 @@
 import { clamp, smoothstep } from '../lib/math';
 import type { World } from './cadena';
+import { lang } from '../i18n';
 
 /**
  * The quiet interface: intro, world name + one sentence, the scale exponent, and a ruler of the
@@ -9,12 +10,13 @@ import type { World } from './cadena';
 
 const SUP: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
 const sup = (n: number) => [...String(n)].map((ch) => SUP[ch] ?? ch).join('');
-const nf = new Intl.NumberFormat('es-CL', { maximumSignificantDigits: 2 });
+const EN = lang === 'en';
+const nf = new Intl.NumberFormat(EN ? 'en-US' : 'es-CL', { maximumSignificantDigits: 2 });
 const UNITS: [number, string][] = [
-  [9.461e24, 'mil millones de años luz'],
-  [9.461e21, 'millones de años luz'],
-  [9.461e15, 'años luz'],
-  [1.496e11, 'UA'],
+  [9.461e24, EN ? 'billion light-years' : 'mil millones de años luz'],
+  [9.461e21, EN ? 'million light-years' : 'millones de años luz'],
+  [9.461e15, EN ? 'light-years' : 'años luz'],
+  [1.496e11, EN ? 'AU' : 'UA'],
   [1e3, 'km'],
   [1, 'm'],
   [1e-3, 'mm'],
@@ -39,7 +41,7 @@ export function roundLength(target: number): { m: number; text: string } {
   const e = Math.log10(target);
   if (e < -30) {
     const n = nice(target / Math.pow(10, PLANCK));
-    return { m: n * Math.pow(10, PLANCK), text: `${nf.format(n)} longitudes de Planck` };
+    return { m: n * Math.pow(10, PLANCK), text: `${nf.format(n)} ${EN ? 'Planck lengths' : 'longitudes de Planck'}` };
   }
   if (e < -15) {
     const k = Math.round(e);
@@ -51,11 +53,12 @@ export function roundLength(target: number): { m: number; text: string } {
 }
 
 function human(e: number) {
-  if (e < -30) return `≈ ${nf.format(Math.pow(10, e - PLANCK))} longitudes de Planck de alto`;
-  if (e < -15) return `≈ 10${sup(Math.round(e + 15))} fm de alto`;
+  const tall = EN ? 'across' : 'de alto';
+  if (e < -30) return `≈ ${nf.format(Math.pow(10, e - PLANCK))} ${EN ? 'Planck lengths' : 'longitudes de Planck'} ${tall}`;
+  if (e < -15) return `≈ 10${sup(Math.round(e + 15))} fm ${tall}`;
   const v = Math.pow(10, e);
   const [u, name] = UNITS.find(([u]) => v >= u) ?? UNITS[UNITS.length - 1];
-  return `≈ ${nf.format(v / u)} ${name} de alto`;
+  return `≈ ${nf.format(v / u)} ${name} ${tall}`;
 }
 
 export interface HudActions {

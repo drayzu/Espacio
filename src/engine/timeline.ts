@@ -1,3 +1,4 @@
+import { tx } from '../i18n';
 /**
  * A choreography over scroll progress, measured in beats. Every value the scene needs (scale
  * exponent, camera, per-world animation) is a named track of keyframes; reading a track at any
@@ -83,7 +84,7 @@ export class Timeline {
 
   /** Names the moment starting at the cursor and lasting `dur` beats (the cursor stays). */
   caption(dur: number, name: string, fact: string) {
-    this.captions.push({ from: this.cursor, to: this.cursor + dur, name, fact });
+    this.captions.push({ from: this.cursor, to: this.cursor + dur, name: tx(name), fact: tx(fact) });
     return this;
   }
 

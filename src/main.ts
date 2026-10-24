@@ -15,6 +15,7 @@ import { createSound } from './engine/sonido';
 import { createLamina } from './engine/lamina';
 import { contactSheet } from './engine/contactos';
 import { crearMundos } from './mundos';
+import { lang, switchLang, tx } from './i18n';
 
 /**
  * Potencias. The journey is a chain of world modules, smallest first. Each brings its own
@@ -69,6 +70,29 @@ const chain = new Chain(
   root,
   workshop(),
 );
+// The worlds' words in the visitor's language (the page's own copy too).
+for (const w of chain.worlds) {
+  w.name = tx(w.name);
+  w.fact = tx(w.fact);
+  w.label = tx(w.label);
+  w.territory = tx(w.territory);
+  for (const n of w.notes ?? []) n.text = tx(n.text);
+  if (w.scaleLabel) w.scaleLabel = { ...w.scaleLabel, unit: tx(w.scaleLabel.unit) };
+}
+document.documentElement.lang = lang;
+for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
+  const text = [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
+  if (text) text.textContent = tx(text.textContent!.trim());
+}
+for (const el of document.querySelectorAll<HTMLElement>('[data-i18n-label]')) el.setAttribute('aria-label', tx(el.getAttribute('aria-label')!));
+document.querySelector('meta[name="description"]')?.setAttribute('content', tx(document.querySelector('meta[name="description"]')!.getAttribute('content')!));
+const langBtn = document.querySelector<HTMLButtonElement>('#lang')!;
+langBtn.querySelector('.chip-t')!.textContent = lang === 'en' ? 'Español' : 'English';
+// (On phones only the key shows: the language it switches to.)
+langBtn.querySelector('.chip-k')!.textContent = lang === 'en' ? 'ES' : 'EN';
+langBtn.setAttribute('aria-label', lang === 'en' ? 'Ver en español' : 'View in English');
+langBtn.addEventListener('click', switchLang);
+
 const tl = new Timeline({ e: chain.worlds[0].home, yaw: 0, pitch: 0, roll: 0, fov: 36 });
 // Where each world's stretch of the journey begins (its arrival), for the ruler.
 const starts = new Map<string, number>();
@@ -123,6 +147,7 @@ addEventListener('keydown', (ev) => {
   if (k === 'a') scroll.togglePlay();
   if (k === 's') hud.showSound(sound.toggle());
   if (k === 'i') hud.showPlate(lamina.toggle());
+  if (k === 'l') switchLang();
 });
 
 // Reduced motion: the view does not lean with the pointer.
