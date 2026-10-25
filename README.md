@@ -1,33 +1,44 @@
 <p align="center">
-  <a href="https://drayzu.github.io/Potencias/"><img src="docs/media/header.svg" width="100%" alt="Potencias — Everything is made of something smaller."></a>
+  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/header-dark.svg"><img src="docs/media/header-light.svg" width="100%" alt="Potencias — Everything is made of something smaller."></picture></a>
 </p>
 
 <p align="center">
-  <a href="https://drayzu.github.io/Potencias/"><img src="docs/media/start.svg" height="52" alt="Start the journey"></a>
+  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/start-dark.svg"><img src="docs/media/start-light.svg" height="52" alt="Start the journey"></picture></a>
 </p>
 
 <p align="center">
-  <img src="docs/media/hero.webp" width="100%" alt="One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth.">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/hero-dark.webp"><img src="docs/media/hero-light.webp" width="100%" alt="One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture>
 </p>
-
-<p align="center"><i>One scroll, sixty orders of magnitude. Every world is built from the particles of the one before.</i></p>
-
-<table>
-  <tr>
-    <td width="33%"><img src="docs/media/quark.webp" width="100%"><br><sub><b>10⁻¹⁵ m</b> · A quark pulled until its flux tube snaps</sub></td>
-    <td width="33%"><img src="docs/media/division.webp" width="100%"><br><sub><b>10⁻⁵ m</b> · A plant cell dividing</sub></td>
-    <td width="33%"><img src="docs/media/earthrise.webp" width="100%"><br><sub><b>10⁸ m</b> · Earthrise over the Moon</sub></td>
-  </tr>
-  <tr>
-    <td width="33%"><img src="docs/media/saturn.webp" width="100%"><br><sub><b>10⁹ m</b> · Saturn, edge on</sub></td>
-    <td width="33%"><img src="docs/media/sgr.webp" width="100%"><br><sub><b>10²¹ → 10¹⁵ m</b> · Into the heart of the Milky Way</sub></td>
-    <td width="33%"><img src="docs/media/deep.webp" width="100%"><br><sub><b>10²⁶ m</b> · A grain of sand of sky, full of galaxies</sub></td>
-  </tr>
-</table>
 
 <p align="center">
-  <sub>English · Español &nbsp;—&nbsp; <code>I</code> plates &nbsp;·&nbsp; <code>S</code> sound &nbsp;·&nbsp; <code>A</code> autoplay &nbsp;·&nbsp; <code>L</code> language</sub>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/quark-dark.webp"><img src="docs/media/quark-light.webp" width="100%" alt="Nobody has seen a quark alone"></picture>
 </p>
+
+<p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/division-dark.webp"><img src="docs/media/division-light.webp" width="100%" alt="A cell divides"></picture>
+</p>
+
+<p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/earthrise-dark.webp"><img src="docs/media/earthrise-light.webp" width="100%" alt="Earthrise"></picture>
+</p>
+
+<p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/saturn-dark.webp"><img src="docs/media/saturn-light.webp" width="100%" alt="Saturn, edge on"></picture>
+</p>
+
+<p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/sgr-dark.webp"><img src="docs/media/sgr-light.webp" width="100%" alt="The heart of the galaxy"></picture>
+</p>
+
+<p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/deep-dark.webp"><img src="docs/media/deep-light.webp" width="100%" alt="A grain of sand of sky"></picture>
+</p>
+
+<p align="center">
+  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/start-dark.svg"><img src="docs/media/start-light.svg" height="52" alt="Start the journey"></picture></a>
+</p>
+
+<br>
 
 <details>
 <summary><sub>How it's made</sub></summary>
@@ -37,6 +48,7 @@
 - Everything is particles: worlds are generated in Web Workers and drawn as point clouds, with adaptive resolution to hold the frame rate.
 - Real data where it counts: star positions, the S stars' orbits around Sagittarius A*, Saturn's ring profile, Andromeda's direction and distance.
 - A plate layer with scientific notes and a scale bar that stays true at every scale. Sound is synthesized in the browser.
+- English and Spanish. Keys: `I` plates, `S` sound, `A` autoplay, `L` language.
 - TypeScript, Three.js and Vite, no framework. `npm install`, `npm run dev`; pushing to `main` deploys to GitHub Pages.
 
 After *Powers of Ten*, by Charles and Ray Eames (1977).
