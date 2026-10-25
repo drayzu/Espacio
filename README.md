@@ -11,27 +11,27 @@
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/quark-dark-v3.webp"><img src="docs/media/quark-light-v3.webp" width="100%" alt="Nobody has seen a quark alone"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/quark-dark-v4.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/quark-dark-v4.webp"><source type="image/avif" srcset="docs/media/quark-light-v4.avif"><img src="docs/media/quark-light-v4.webp" width="100%" alt="Nobody has seen a quark alone"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/division-dark-v3.webp"><img src="docs/media/division-light-v3.webp" width="100%" alt="A cell divides"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/division-dark-v4.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/division-dark-v4.webp"><source type="image/avif" srcset="docs/media/division-light-v4.avif"><img src="docs/media/division-light-v4.webp" width="100%" alt="A cell divides"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/earthrise-dark-v3.webp"><img src="docs/media/earthrise-light-v3.webp" width="100%" alt="Earthrise"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/earthrise-dark-v4.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/earthrise-dark-v4.webp"><source type="image/avif" srcset="docs/media/earthrise-light-v4.avif"><img src="docs/media/earthrise-light-v4.webp" width="100%" alt="Earthrise"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/saturn-dark-v3.webp"><img src="docs/media/saturn-light-v3.webp" width="100%" alt="Saturn, edge on"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/saturn-dark-v4.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/saturn-dark-v4.webp"><source type="image/avif" srcset="docs/media/saturn-light-v4.avif"><img src="docs/media/saturn-light-v4.webp" width="100%" alt="Saturn, edge on"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/sgr-dark-v3.webp"><img src="docs/media/sgr-light-v3.webp" width="100%" alt="The heart of the galaxy"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/sgr-dark-v4.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/sgr-dark-v4.webp"><source type="image/avif" srcset="docs/media/sgr-light-v4.avif"><img src="docs/media/sgr-light-v4.webp" width="100%" alt="The heart of the galaxy"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/deep-dark-v3.webp"><img src="docs/media/deep-light-v3.webp" width="100%" alt="A grain of sand of sky"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/deep-dark-v4.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/deep-dark-v4.webp"><source type="image/avif" srcset="docs/media/deep-light-v4.avif"><img src="docs/media/deep-light-v4.webp" width="100%" alt="A grain of sand of sky"></picture>
 </p>
 
 <p align="center">

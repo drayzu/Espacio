@@ -1,2 +1,5 @@
 node_modules
 dist
+
+# source frames for tools/readme_media.py (heavy; the encoded clips live in docs/media/)
+tools/src/
