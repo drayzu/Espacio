@@ -1,33 +1,44 @@
-# Potencias
+<p align="center">
+  <a href="https://drayzu.github.io/Potencias/"><img src="docs/media/header.svg" width="100%" alt="Potencias — Everything is made of something smaller."></a>
+</p>
 
-**Everything is made of something smaller.**
+<p align="center">
+  <a href="https://drayzu.github.io/Potencias/"><img src="docs/media/start.svg" height="52" alt="Start the journey"></a>
+</p>
 
-A continuous, scroll-driven journey through more than sixty orders of magnitude: from the Planck foam, through quarks, atoms, DNA, cells, leaves, the Earth, the Solar System and the Milky Way, out to the observable universe and the hypotheses beyond it. Every world is built from the particles of the one before.
+<p align="center">
+  <img src="docs/media/hero.webp" width="100%" alt="One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth.">
+</p>
 
-Available in English and Spanish.
+<p align="center"><i>One scroll, sixty orders of magnitude. Every world is built from the particles of the one before.</i></p>
 
-## Highlights
+<table>
+  <tr>
+    <td width="33%"><img src="docs/media/quark.webp" width="100%"><br><sub><b>10⁻¹⁵ m</b> · A quark pulled until its flux tube snaps</sub></td>
+    <td width="33%"><img src="docs/media/division.webp" width="100%"><br><sub><b>10⁻⁵ m</b> · A plant cell dividing</sub></td>
+    <td width="33%"><img src="docs/media/earthrise.webp" width="100%"><br><sub><b>10⁸ m</b> · Earthrise over the Moon</sub></td>
+  </tr>
+  <tr>
+    <td width="33%"><img src="docs/media/saturn.webp" width="100%"><br><sub><b>10⁹ m</b> · Saturn, edge on</sub></td>
+    <td width="33%"><img src="docs/media/sgr.webp" width="100%"><br><sub><b>10²¹ → 10¹⁵ m</b> · Into the heart of the Milky Way</sub></td>
+    <td width="33%"><img src="docs/media/deep.webp" width="100%"><br><sub><b>10²⁶ m</b> · A grain of sand of sky, full of galaxies</sub></td>
+  </tr>
+</table>
 
-- **31 nested worlds** placed at their real physical positions, with double-precision matrices relative to a pivot world, so the 60+ orders of magnitude never reach the GPU raw.
-- **Named moments**: a quark pulled until its flux tube snaps, a plant cell dividing, Earthrise, Saturn seen edge on, the Pale Blue Dot, the S stars orbiting Sagittarius A*, a Hubble-style deep field, and the cosmic microwave background as a wall.
-- **Real data** where it matters: star positions, orbital elements of the S stars, Saturn's ring profile, galactic orientation, Andromeda's direction and distance.
-- **Plate layer** (key `I`): scientific annotations and a scale bar that is true at every scale.
-- **Procedural sound** (key `S`), autoplay (key `A`), language switch (key `L`).
-- Worlds are generated in Web Workers; adaptive resolution keeps the frame rate.
+<p align="center">
+  <sub>English · Español &nbsp;—&nbsp; <code>I</code> plates &nbsp;·&nbsp; <code>S</code> sound &nbsp;·&nbsp; <code>A</code> autoplay &nbsp;·&nbsp; <code>L</code> language</sub>
+</p>
 
-## Stack
+<details>
+<summary><sub>How it's made</sub></summary>
+<br>
 
-TypeScript, Three.js and Vite. No framework.
+- 31 nested worlds at their real positions, kept in double precision relative to a pivot world, so no raw 10⁶⁰ ever reaches the GPU.
+- Everything is particles: worlds are generated in Web Workers and drawn as point clouds, with adaptive resolution to hold the frame rate.
+- Real data where it counts: star positions, the S stars' orbits around Sagittarius A*, Saturn's ring profile, Andromeda's direction and distance.
+- A plate layer with scientific notes and a scale bar that stays true at every scale. Sound is synthesized in the browser.
+- TypeScript, Three.js and Vite, no framework. `npm install`, `npm run dev`; pushing to `main` deploys to GitHub Pages.
 
-## Run locally
+After *Powers of Ten*, by Charles and Ray Eames (1977).
 
-```bash
-npm install
-npm run dev
-```
-
-`npm run build` writes the static site to `dist/`. Pushing to `main` deploys it to GitHub Pages through the included workflow.
-
-## Inspiration
-
-*Powers of Ten* by Charles and Ray Eames (1977).
+</details>
