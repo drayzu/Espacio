@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/start-dark.svg"><img src="docs/media/start-light.svg" height="52" alt="Start the journey"></picture></a>
+  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/ruler-dark.svg"><img src="docs/media/ruler-light.svg" width="440" alt="Scroll through all of it"></picture></a>
 </p>
 
 <p align="center">
@@ -35,7 +35,7 @@
 </p>
 
 <p align="center">
-  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/start-dark.svg"><img src="docs/media/start-light.svg" height="52" alt="Start the journey"></picture></a>
+  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/enter-dark.svg"><img src="docs/media/enter-light.svg" width="500" alt="Open drayzu.github.io/Potencias"></picture></a>
 </p>
 
 <br>
