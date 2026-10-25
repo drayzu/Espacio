@@ -7,31 +7,31 @@
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/hero-dark.webp"><img src="docs/media/hero-light.webp" width="100%" alt="One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/hero-dark-v2.webp"><img src="docs/media/hero-light-v2.webp" width="100%" alt="One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/quark-dark.webp"><img src="docs/media/quark-light.webp" width="100%" alt="Nobody has seen a quark alone"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/quark-dark-v2.webp"><img src="docs/media/quark-light-v2.webp" width="100%" alt="Nobody has seen a quark alone"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/division-dark.webp"><img src="docs/media/division-light.webp" width="100%" alt="A cell divides"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/division-dark-v2.webp"><img src="docs/media/division-light-v2.webp" width="100%" alt="A cell divides"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/earthrise-dark.webp"><img src="docs/media/earthrise-light.webp" width="100%" alt="Earthrise"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/earthrise-dark-v2.webp"><img src="docs/media/earthrise-light-v2.webp" width="100%" alt="Earthrise"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/saturn-dark.webp"><img src="docs/media/saturn-light.webp" width="100%" alt="Saturn, edge on"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/saturn-dark-v2.webp"><img src="docs/media/saturn-light-v2.webp" width="100%" alt="Saturn, edge on"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/sgr-dark.webp"><img src="docs/media/sgr-light.webp" width="100%" alt="The heart of the galaxy"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/sgr-dark-v2.webp"><img src="docs/media/sgr-light-v2.webp" width="100%" alt="The heart of the galaxy"></picture>
 </p>
 
 <p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/deep-dark.webp"><img src="docs/media/deep-light.webp" width="100%" alt="A grain of sand of sky"></picture>
+  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/deep-dark-v2.webp"><img src="docs/media/deep-light-v2.webp" width="100%" alt="A grain of sand of sky"></picture>
 </p>
 
 <p align="center">
