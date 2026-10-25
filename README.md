@@ -1,13 +1,5 @@
 <p align="center">
-  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/header-dark.svg"><img src="docs/media/header-light.svg" width="100%" alt="Potencias — Everything is made of something smaller."></picture></a>
-</p>
-
-<p align="center">
-  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/ruler-dark.svg"><img src="docs/media/ruler-light.svg" width="440" alt="Scroll through all of it"></picture></a>
-</p>
-
-<p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/hero-dark-v3.webp"><img src="docs/media/hero-light-v3.webp" width="100%" alt="One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture>
+  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/cover-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/cover-dark.webp"><source type="image/avif" srcset="docs/media/cover-light.avif"><img src="docs/media/cover-light.webp" width="100%" alt="Potencias — Everything is made of something smaller. One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture></a>
 </p>
 
 <p align="center">
