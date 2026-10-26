@@ -41,7 +41,6 @@ export function switchLang() {
 
 const EN: Record<string, string> = {
   // The page.
-  'Espacio': 'Space',
   'Todo está hecho de algo más pequeño.': 'Everything is made of something smaller.',
   'Desliza para empezar': 'Scroll to begin',
   'Lámina': 'Plate',

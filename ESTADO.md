@@ -3,7 +3,7 @@
 Viaje continuo de escalas en el navegador: de lo más pequeño (Planck, 10⁻³⁵ m) a lo más grande (universo observable y multiverso, 10²⁷ m y más allá). Lo visual va por sobre todo: el zoom es la experiencia, máximo una frase por mundo.
 
 ## Decisiones tomadas
-- Nombre: **Espacio** (en inglés, *Space*), primera obra de la serie Espacio · Tiempo · Destino · Infinito; se llamó **Potencias** (homenaje a *Powers of Ten*) hasta el 26-10-2026. Publicada en drayzu.github.io/Espacio. Carpeta: `E:\Proyectos\ChatGPT\potencias`.
+- Nombre: **Espacio** (igual en inglés: los títulos de la serie no se traducen), primera obra de la serie Espacio · Tiempo · Destino · Infinito; se llamó **Potencias** (homenaje a *Powers of Ten*) hasta el 26-10-2026. Publicada en drayzu.github.io/Espacio. Carpeta: `E:\Proyectos\ChatGPT\potencias`.
 - Empieza directo en la longitud de Planck. Sin protagonista humano (se descartaron Atacama y el ojo).
 - Stack: Vite + TypeScript + Three.js sin React. Fuentes: Instrument Serif, Geist y Geist Mono.
 - **Estilo (decidido tras el estudio de mundos):**
