@@ -10,7 +10,7 @@ import os, subprocess
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-TITLE = 'Potencias'
+TITLE = 'Espacio'
 PHRASE = 'Everything is made of something smaller.'
 FRAMES, COUNT, CROP = 'tools/src/frames/hero', 270, (0, 0, 1280, 720)   # 1280 x 720 JPG at 30 fps
 CRF = 34

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/cover-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/cover-dark.webp"><source type="image/avif" srcset="docs/media/cover-light.avif"><img src="docs/media/cover-light.webp" width="100%" alt="Potencias — Everything is made of something smaller. One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture></a>
+  <a href="https://drayzu.github.io/Espacio/"><picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/cover-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/cover-dark.webp"><source type="image/avif" srcset="docs/media/cover-light.avif"><img src="docs/media/cover-light.webp" width="100%" alt="Espacio — Everything is made of something smaller. One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture></a>
 </p>
 
 <p align="center">
@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <a href="https://drayzu.github.io/Potencias/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/enter-dark.svg"><img src="docs/media/enter-light.svg" width="500" alt="Open drayzu.github.io/Potencias"></picture></a>
+  <a href="https://drayzu.github.io/Espacio/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/enter-dark.svg"><img src="docs/media/enter-light.svg" width="500" alt="Open drayzu.github.io/Espacio"></picture></a>
 </p>
 
 <br>

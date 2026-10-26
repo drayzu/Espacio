@@ -18,7 +18,7 @@ import { crearMundos } from './mundos';
 import { lang, switchLang, tx } from './i18n';
 
 /**
- * Potencias. The journey is a chain of world modules, smallest first. Each brings its own
+ * Espacio. The journey is a chain of world modules, smallest first. Each brings its own
  * choreography; together they form one timeline that the page scroll moves through.
  */
 
@@ -80,6 +80,7 @@ for (const w of chain.worlds) {
   if (w.scaleLabel) w.scaleLabel = { ...w.scaleLabel, unit: tx(w.scaleLabel.unit) };
 }
 document.documentElement.lang = lang;
+document.title = tx(document.title);
 for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
   const text = [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
   if (text) text.textContent = tx(text.textContent!.trim());

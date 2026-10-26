@@ -1,4 +1,4 @@
-# Potencias · biblia visual
+# Espacio · biblia visual
 
 **Una idea:** todo está hecho de algo más pequeño. El scroll lo demuestra: cada mundo se construye con las partículas del anterior.
 
