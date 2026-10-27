@@ -5,6 +5,11 @@ import { cloudBuilder, cloudFromData, type PointsData } from '../engine/points';
 import { SUN_DIR } from './tierra';
 import { lineSet, linesFromData, type LinesData } from './lineas';
 import { LUNA } from './luna';
+import { TEXTURAS, mover, unaVez } from '../engine/cuerpos';
+import { saturno } from '../horizontes';
+
+/** Saturn as Horizontes draws it, made once. */
+const saturnoReal = unaVez(() => saturno(TEXTURAS));
 
 /**
  * The Solar System. 1 unit = 10¹¹ m (1 AU ≈ 1.496), the ecliptic in (x, z), y towards ecliptic
@@ -163,56 +168,6 @@ export function solar(): WorldModule {
             }
           }
         }
-        // Saturn to scale (see SATURN): a banded, slightly flattened globe lit by the Sun, darkened
-        // where the rings shade it; and the rings, sampled by their real profile (C, B, the Cassini
-        // division, A with the Encke gap, the thin F ring), darkened where the planet shades them.
-        const S = SATURN;
-        const ringOpacity = (km: number) => {
-          if (km < 66900 || km > 140600) return 0;
-          if (km < 74500) return 0.04;
-          if (km < 92000) return 0.12 + 0.1 * ((km - 74500) / 17500);
-          if (km < 117580) return 0.75 + 0.25 * Math.sin(((km - 92000) / 25580) * Math.PI);
-          if (km < 122170) return 0.06;
-          if (km > 133420 && km < 133750) return 0;
-          if (km < 136775) return 0.5;
-          if (km > 140000 && km < 140400) return 0.35;
-          return 0;
-        };
-        const sat = cloudBuilder(165);
-        const p = new THREE.Vector3();
-        const w = new THREE.Vector3();
-        for (let k = 0; k < 70000; k++) {
-          const [x, y, z] = sat.onSphere();
-          // The planet's own frame: u, n (its axis, flattened 10 %), v.
-          p.copy(S.u).multiplyScalar(x * S.R).addScaledVector(S.n, y * S.R * 0.902).addScaledVector(S.v, z * S.R);
-          const nrm = w.copy(S.u).multiplyScalar(x).addScaledVector(S.n, y).addScaledVector(S.v, z);
-          const sun = nrm.dot(S.toSun);
-          let l = smoothstep(-0.06, 0.22, sun) * (0.3 + 0.7 * Math.max(0, sun));
-          // The rings' shadow: follow the light back to the ring plane.
-          const along = -p.dot(S.n) / S.toSun.dot(S.n);
-          if (along > 0) {
-            const q = p.clone().addScaledVector(S.toSun, along);
-            l *= 1 - 0.8 * ringOpacity(q.length() / KM);
-          }
-          const lat = Math.abs(y);
-          const band = Math.sin(lat * 26 + Math.sin(lat * 7) * 1.5);
-          const hex = lat > 0.92 ? 0xb8b4a4 : band > 0.55 ? 0xc8a06a : band < -0.6 ? 0xf0e0b8 : 0xe2c896;
-          sat.push(S.c.x + p.x, S.c.y + p.y, S.c.z + p.z, hex, S.R * 0.026, 0, 0.003 + 0.17 * l);
-        }
-        const rings = cloudBuilder(166);
-        for (let k = 0; k < 340000; k++) {
-          const km = 66900 + r() * (140600 - 66900);
-          const o = ringOpacity(km);
-          if (r() > 0.08 + o) continue;
-          const ang = r() * Math.PI * 2;
-          p.copy(S.u).multiplyScalar(Math.cos(ang) * km * KM).addScaledVector(S.v, Math.sin(ang) * km * KM);
-          // The planet's shadow falls across the rings behind it.
-          const t = p.dot(S.toSun);
-          const shade = t < 0 && p.lengthSq() - t * t < S.R * S.R ? 0.08 : 1;
-          const hex = km < 92000 ? 0xa89c88 : km < 117580 ? 0xeadcbc : 0xd6c8aa;
-          rings.push(S.c.x + p.x, S.c.y + p.y, S.c.z + p.z, hex, 1100 * KM, 0, (0.002 + 0.048 * o) * shade);
-        }
-
         // Asteroid belt and Kuiper belt.
         for (let k = 0; k < 18000; k++) {
           const a = (2.1 + r() * 1.2) * AU;
@@ -228,29 +183,25 @@ export function solar(): WorldModule {
         // (past the Earth almost at once, hours on to Neptune).
         const front = lineSet();
         front.circle(new THREE.Vector3(), new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 1), 1, 200, 0.42);
-        return { main: main.data(), orbits: ob.data(), front: front.data(), satDot: sd.data(), saturn: sat.data(), rings: rings.data() };
+        return { main: main.data(), orbits: ob.data(), front: front.data(), satDot: sd.data() };
       },
       assemble(data) {
         const cloud = cloudFromData(data.main as PointsData, 1, 1);
         const orbits = cloudFromData(data.orbits as PointsData, 1, 1);
         const front = linesFromData(data.front as LinesData, 0xffe2b0);
         const satDot = cloudFromData(data.satDot as PointsData, 1, 1);
-        const saturn = cloudFromData(data.saturn as PointsData, 1, 1);
-        const rings = cloudFromData(data.rings as PointsData, 1, 1);
-        // The globe hides what lies behind it (the far side, the rings beyond it), as the Earth does.
-        const core = new THREE.Mesh(new THREE.SphereGeometry(SATURN.R * 0.95, 64, 32), new THREE.MeshBasicMaterial({ color: 0x000000 }));
-        core.position.copy(SATURN.c);
-        core.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), SATURN.n);
-        core.scale.set(1, 0.902, 1);
-        core.renderOrder = -2;
-        for (const c of [saturn, rings]) (c.points.material as THREE.ShaderMaterial).depthTest = true;
-        // Rings a few tens of metres thick: seen edge on, they all but vanish.
-        rings.u.uSurface.value.set(SATURN.n.x, SATURN.n.y, SATURN.n.z, 0.97);
+        // Saturn to scale (see SATURN): the Horizontes body, from the real map and the rings' real
+        // profile (C, B, the Cassini division, A with the Encke gap), the shadows of each on the other.
+        // Its axis is SATURN.n; the rings in its equatorial plane.
+        const saturn = saturnoReal();
+        saturn.group.position.copy(SATURN.c);
+        saturn.group.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(SATURN.u, SATURN.n, SATURN.u.clone().cross(SATURN.n)));
+        saturn.group.scale.setScalar(SATURN.R);
         const object = new THREE.Group();
-        object.add(core, cloud.points, orbits.points, front.mesh, satDot.points, saturn.points, rings.points);
+        object.add(cloud.points, orbits.points, front.mesh, satDot.points, saturn.group);
         return {
           object,
-          clouds: [cloud, orbits, satDot, saturn, rings],
+          clouds: [cloud, orbits, satDot],
           update(f) {
             const form = f.tl.get('solar.form', f.p);
             cloud.u.uReveal.value = form;
@@ -263,13 +214,8 @@ export function solar(): WorldModule {
             orbits.u.uGain.value = (1 - 0.9 * f.tl.get('pbd', f.p)) * (1 - dive);
             const real = dive * (1 - smoothstep(f.home - 2.4, f.home - 1.7, f.e));
             satDot.u.uGain.value = 1 - real;
-            saturn.u.uGain.value = real;
-            rings.u.uGain.value = real;
             // Not drawn at all the rest of the time.
-            saturn.points.visible = rings.points.visible = real > 0.001;
-            // Only once Saturn is large on screen: a few pixels across, its own points would lose
-            // the depth test against it.
-            core.visible = real > 0.01 && f.e < f.home - 3.8;
+            mover(saturn, f, SATURN.toSun, real * f.alpha);
             // The light front: from the Sun out past Neptune (about 31 AU).
             const light = f.tl.get('solar.light', f.p);
             front.mesh.scale.setScalar(Math.max(1e-4, light * 31 * AU));

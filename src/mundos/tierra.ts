@@ -1,25 +1,34 @@
 import * as THREE from 'three';
 import { gauss, rng, smoothstep } from '../lib/math';
-import { perlin3 } from '../lib/puntos';
-import { standIn, type WorldModule } from '../engine/cadena';
+import type { WorldModule } from '../engine/cadena';
 import { cloudBuilder, cloudFromData, type PointsData } from '../engine/points';
 import { lineSet, linesFromData, type LinesData } from './lineas';
+import { TEXTURAS, mover, unaVez } from '../engine/cuerpos';
+import { tierra as tierraH, type Planeta } from '../horizontes';
 
 /**
  * The Earth. 1 unit = 1 Mm (1000 km), y towards the north pole. Our valley lies in southern
- * Chile (40° S, 72° W): ocean to the west, a long snowy range to the east. The rest is procedural.
- * More detail around the valley (log-polar on the sphere), baked sunlight with a terminator and
- * city lights on the night side, clouds that leave our valley clear, a glowing limb.
- * A black core hides the far hemisphere (additive points would otherwise see through the planet).
- * Arrival: the planet assembles outward from our valley. Moment: a slow orbit, while the orbit of
- * the International Space Station draws itself round the globe (400 km up, inclined 51.6°): the
- * farthest place where people live today.
+ * Chile (40° S, 72° W), between the Pacific and the Andes.
+ * The planet is the Horizontes Earth (src/horizontes): points coloured from the real map, its
+ * clouds from the real cloud map (cleared over our valley), the dimmed photograph underneath (it
+ * hides the far side), ever finer points under the camera, the haze beyond the limb. On top, this
+ * piece's own: city lights on the night side, and the arrival, the planet assembling outward
+ * from our valley, which keeps its patch of ground (6 to 12 km out, where the valley fades into
+ * its haze, the Earth takes over).
+ * This chain's frame has east towards +z, a mirror of the real one: `realAt` is where a real place
+ * falls in it (the real map turned about the axis so that Chile lies under our valley).
+ * Moment: a slow orbit, while the orbit of the International Space Station draws itself round the
+ * globe (400 km up, inclined 51.6°): the farthest place where people live today.
  */
 
 export const R_EARTH = 6.371;
 const LAT0 = (-40 * Math.PI) / 180;
 const LON0 = (-72 * Math.PI) / 180;
 const normalAt = (lat: number, lon: number) => new THREE.Vector3(Math.cos(lat) * Math.cos(lon), Math.sin(lat), Math.cos(lat) * Math.sin(lon));
+/** Where a real place (latitude, longitude east) lies on this Earth: the real map, turned. */
+export const realAt = (lat: number, lon: number) => normalAt(lat, 2 * LON0 - lon);
+/** The turn that lays the real map (Horizontes: east towards −z) with Chile under our valley. */
+const GIRO = -2 * LON0;
 
 export const TIERRA = (() => {
   const n = normalAt(LAT0, LON0);
@@ -43,8 +52,95 @@ const issAt = (() => {
   return (t: number, out = new THREE.Vector3()) => out.set(Math.cos((t + T0) * Math.PI * 2 + node), 0, Math.sin((t + T0) * Math.PI * 2 + node)).multiplyScalar(R_ISS).applyQuaternion(tilt);
 })();
 
-// Afternoon over the valley: the sun is 40° to its north-west.
+// Morning over the valley: the sun is 40° to its north-east (east is −z on the real map).
 export const SUN_DIR = normalAt(LAT0 + 0.35, LON0 - 0.55).normalize();
+
+/**
+ * The real cloud map with the sky over our valley cleared (soft, about 500 km across), so the
+ * valley is seen from above and the Earth assembles round it in the clear.
+ */
+async function nubesSinValle() {
+  const img = await createImageBitmap(await (await fetch(`${TEXTURAS}2k_earth_clouds.jpg`)).blob());
+  const c = document.createElement('canvas');
+  c.width = img.width;
+  c.height = img.height;
+  const g = c.getContext('2d')!;
+  g.drawImage(img, 0, 0);
+  const x = (LON0 / (Math.PI * 2) + 0.5) * c.width;
+  const y = (0.5 - LAT0 / Math.PI) * c.height;
+  const px = c.height / 180;
+  g.save();
+  g.translate(x, y);
+  // Equirectangular: a degree of longitude is shorter by cos(latitude).
+  g.scale(1 / Math.cos(LAT0), 1);
+  const grad = g.createRadialGradient(0, 0, 3 * px, 0, 0, 8 * px);
+  grad.addColorStop(0, 'rgba(0,0,0,1)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grad;
+  g.fillRect(-8 * px, -8 * px, 16 * px, 16 * px);
+  g.restore();
+  const blob = await new Promise<Blob>((res) => c.toBlob((b) => res(b!), 'image/jpeg', 0.92));
+  return URL.createObjectURL(blob);
+}
+
+/** Its own GLSL, run on every point and on every pixel of the photograph (see src/horizontes/planeta.ts). */
+const SUPERFICIE = /* glsl */ `
+  // Our valley, and how far the planet has assembled outward from it; its patch of ground stays the
+  // valley's while the valley shows (uHueco).
+  float angV = acos(clamp(dot(n, uValle), -1.0, 1.0));
+  float dV = angV / 3.14159265 * 0.92;
+  // (Not in the photograph, hp = 0.5: it lies 19 km down and would show the hole off to one side.)
+  float hueco = abs(hp - 0.5) < 1e-6 ? 0.0 : uHueco;
+  float on = smoothstep(dV, dV + 0.06, uForm) * mix(1.0, smoothstep(6.0, 12.0, angV * 6371.0), hueco);
+  // City lights on the night side: clustered, on land only (not on the sea, the ice or the clouds).
+  float lumA = dot(alb, vec3(0.2126, 0.7152, 0.0722));
+  float firme = (1.0 - esMar(alb)) * (1.0 - smoothstep(0.3, 0.45, lumA)) * step(abs(n.y), 0.88);
+  float noche = smoothstep(0.08, -0.2, dot(n, uSun));
+  float luces = smoothstep(0.6, 0.72, fbm(n * 90.0)) * firme * noche;
+  extra += vec3(1.0, 0.6, 0.28) * luces * 0.3;
+  alb *= on;
+  sombra *= on;
+  extra *= on;`;
+
+/**
+ * The Earth as Horizontes draws it, made once: the body arrives when its cloud map is ready. Its
+ * uniforms (where our valley is in the real map's frame, how far it has assembled) are shared by
+ * every layer.
+ */
+const tierraReal = unaVez(() => {
+  const u = {
+    // Chile in the real map's own frame (Horizontes: east towards −z).
+    uValle: { value: new THREE.Vector3(Math.cos(LAT0) * Math.cos(LON0), Math.sin(LAT0), -Math.cos(LAT0) * Math.sin(LON0)) },
+    uForm: { value: 0 },
+    uHueco: { value: 1 },
+  };
+  const t = { u, body: null as Planeta | null, nubes: null as THREE.ShaderMaterial | null };
+  nubesSinValle().then((url) => {
+    const b = tierraH(TEXTURAS, {
+      nubes: url,
+      superficie: { pre: 'uniform vec3 uValle; uniform float uForm, uHueco;', glsl: SUPERFICIE, uniforms: u },
+    });
+    b.group.rotation.y = GIRO;
+    b.group.scale.setScalar(R_EARTH);
+    b.listo.then(() => {
+      // The cloud shell: the points lifted to 1.01.
+      b.cuerpo.traverse((o) => {
+        const m = (o as THREE.Points).material as THREE.ShaderMaterial | undefined;
+        if (m?.vertexShader?.includes('p *= 1.01')) t.nubes = m;
+      });
+    });
+    t.body = b;
+  });
+  return t;
+});
+
+/**
+ * The chain's view, carried up from our valley, sees the Earth with its south up (north is about
+ * 172° from the top of the screen through the whole moment, measured in the page). Pulling back
+ * from the valley, the picture turns about the line of sight by this much: the Earth north up.
+ * It turns back on the way to the Earthrise (luna.ts), whose shot is solved without it.
+ */
+export const GIRO_TIERRA = -3.0;
 
 export function tierra(): WorldModule {
   return {
@@ -62,103 +158,12 @@ export function tierra(): WorldModule {
       tint: 0x7fb4ff,
       notes: [
         { at: TIERRA.anchor.toArray(), text: 'nuestro valle' },
-        { at: normalAt((-28 * Math.PI) / 180, (-69.5 * Math.PI) / 180).multiplyScalar(R_EARTH).toArray(), text: 'los Andes' },
-        { at: normalAt((-35 * Math.PI) / 180, (-95 * Math.PI) / 180).multiplyScalar(R_EARTH).toArray(), text: 'océano Pacífico' },
+        { at: realAt((-28 * Math.PI) / 180, (-69.5 * Math.PI) / 180).multiplyScalar(R_EARTH).toArray(), text: 'los Andes' },
+        { at: realAt((-35 * Math.PI) / 180, (-95 * Math.PI) / 180).multiplyScalar(R_EARTH).toArray(), text: 'océano Pacífico' },
         { at: issAt(0).toArray(), text: 'Estación Espacial', e: [7.0, 7.45] },
       ],
       generate() {
         const r = rng(141);
-        const noise = perlin3(142);
-        const b = cloudBuilder(143);
-        const N0 = TIERRA.normal;
-
-        const surface = (dir: THREE.Vector3) => {
-          const lat = Math.asin(dir.y);
-          const lon = Math.atan2(dir.z, dir.x);
-          // Local frame around the valley, in radians.
-          let dLon = lon - LON0;
-          if (dLon > Math.PI) dLon -= Math.PI * 2;
-          if (dLon < -Math.PI) dLon += Math.PI * 2;
-          const east = dLon * Math.cos(LAT0);
-          const north = lat - LAT0;
-          const inChile = smoothstep(-0.75, -0.6, north) * (1 - smoothstep(0.75, 0.9, north));
-          const coast = -0.012 + 0.006 * Math.sin(north * 40) + 0.004 * noise(north * 30, 1, 0, 2);
-          // The range: broken, uneven, snow only in stretches.
-          const range = Math.exp(-Math.pow((east - 0.026 - 0.004 * noise(north * 12, 2, 0, 2)) / 0.008, 2)) * inChile * (0.45 + 0.55 * noise(north * 25, 3, 0, 3) + 0.3);
-          let h = noise(dir.x * 1.7, dir.y * 1.7, dir.z * 1.7, 5) + 0.25 * noise(dir.x * 5, dir.y * 5, dir.z * 5, 3);
-          // Land along the valley's coast, ocean beyond it.
-          h = h * (1 - inChile * smoothstep(-0.2, -0.05, east) * (1 - smoothstep(0.25, 0.5, east))) + inChile * (east > coast ? 0.18 : -0.25) * (1 - smoothstep(0.2, 0.5, Math.abs(east)));
-          const land = h > 0.08;
-          const polar = Math.abs(lat) > 1.15 + 0.08 * noise(dir.x * 4, dir.y * 4, dir.z * 4, 2);
-          let hex = land ? (noise(dir.x * 3 + 5, dir.y * 3, dir.z * 3, 3) > 0.1 && Math.abs(lat) < 0.6 ? 0x9c8c6c : 0x2f6a3a) : h > -0.06 ? 0x174a85 : 0x0c2c62;
-          if (land && range > 0.45) hex = range > 0.85 && noise(north * 60, 4, east * 60, 2) > 0.05 ? 0xeef4ff : 0x7a6f62;
-          if (polar) hex = 0xe6eef6;
-          return { land, hex, lat };
-        };
-        const light = (dir: THREE.Vector3) => Math.max(0, dir.dot(SUN_DIR));
-        const delayOf = (dir: THREE.Vector3) => (Math.acos(THREE.MathUtils.clamp(dir.dot(N0), -1, 1)) / Math.PI) * 0.92;
-
-        const put = (dir: THREE.Vector3, size: number, flag = false, gain = 1) => {
-          const s = surface(dir);
-          const l = light(dir);
-          const day = smoothstep(-0.05, 0.2, dir.dot(SUN_DIR));
-          b.push(dir.x * R_EARTH, dir.y * R_EARTH, dir.z * R_EARTH, s.hex, size, 0, (0.03 + 1.05 * Math.pow(l, 0.8)) * (s.hex === 0xeef4ff || s.hex === 0xe6eef6 ? 0.42 : 0.3) * gain, { delay: flag ? 0 : delayOf(dir), flag });
-          // City lights on the night side.
-          if (s.land && day < 0.6 && noise(dir.x * 22, dir.y * 22, dir.z * 22, 2) > 0.22 && Math.abs(s.lat) < 1.0) {
-            b.push(dir.x * R_EARTH * 1.001, dir.y * R_EARTH * 1.001, dir.z * R_EARTH * 1.001, 0xffa050, size * 0.6, 0, 0.9 * (1 - day), { delay: delayOf(dir) });
-          }
-        };
-
-        // Even coverage of the whole globe.
-        const golden = Math.PI * (3 - Math.sqrt(5));
-        const N = 260000;
-        const dir = new THREE.Vector3();
-        for (let i = 0; i < N; i++) {
-          const y = 1 - (2 * (i + 0.5)) / N;
-          const rr = Math.sqrt(1 - y * y);
-          // A little disorder, so the lattice never shows.
-          dir.set(Math.cos(i * golden) * rr + (r() - 0.5) * 0.008, y + (r() - 0.5) * 0.008, Math.sin(i * golden) * rr + (r() - 0.5) * 0.008).normalize();
-          put(dir, 0.062);
-        }
-        // Extra detail around our valley, log-polar on the sphere.
-        const t1 = new THREE.Vector3().crossVectors(N0, new THREE.Vector3(0, 1, 0)).normalize();
-        const t2 = new THREE.Vector3().crossVectors(N0, t1);
-        for (let i = 0; i < 74000; i++) {
-          const ang = 0.0009 * Math.exp(r() * Math.log(0.45 / 0.0009));
-          const th = r() * Math.PI * 2;
-          dir.copy(N0).multiplyScalar(Math.cos(ang)).addScaledVector(t1, Math.sin(ang) * Math.cos(th)).addScaledVector(t2, Math.sin(ang) * Math.sin(th)).normalize();
-          // Same coverage as the valley's own ground, so its patch of land blends in: it brightens
-          // over the same 6 to 12 km where the valley fades into its haze, so there is no seam.
-          const km = ang * R_EARTH * 1000;
-          put(dir, R_EARTH * ang * 0.028, false, smoothstep(6, 12, km));
-        }
-
-        // Clouds, keeping our valley clear: swirls (noise bent by noise), most along the equator
-        // and the mid-latitude storm tracks, few over the subtropical deserts. Many fine points,
-        // so they read as veils rather than blots.
-        for (let i = 0; i < 70000; i++) {
-          const [x, y, z] = b.onSphere();
-          dir.set(x, y, z);
-          if (dir.dot(N0) > Math.cos(0.08)) continue;
-          const lat = Math.abs(Math.asin(y));
-          const belt = 0.55 * Math.exp(-((lat / 0.12) ** 2)) + 0.6 * Math.exp(-(((lat - 0.95) / 0.22) ** 2)) - 0.35 * Math.exp(-(((lat - 0.42) / 0.12) ** 2));
-          const wx = noise(x * 1.3 + 3, y * 1.3, z * 1.3, 2) * 1.6;
-          const wy = noise(x * 1.3, y * 1.3 + 5, z * 1.3, 2) * 1.6;
-          const wz = noise(x * 1.3, y * 1.3, z * 1.3 + 7, 2) * 1.6;
-          const c = noise(x * 2.6 + wx, y * 2.6 + wy, z * 2.6 + wz, 4) + 0.2 * noise(x * 10, y * 10, z * 10, 2) + belt * 0.35;
-          if (c < 0.2) continue;
-          const dens = smoothstep(0.2, 0.5, c);
-          const k = R_EARTH * 1.008;
-          b.push(x * k, y * k, z * k, 0xffffff, 0.07, 0.0, (0.02 + 0.8 * light(dir)) * 0.32 * (0.45 + 0.55 * dens), { delay: delayOf(dir) });
-        }
-        // Atmosphere: denser low, brighter on the day side; additive points brighten the limb by themselves.
-        for (let i = 0; i < 30000; i++) {
-          const [x, y, z] = b.onSphere();
-          dir.set(x, y, z);
-          const k = R_EARTH * (1.004 + Math.pow(r(), 2.2) * 0.05);
-          b.push(x * k, y * k, z * k, 0x4f86ff, 0.1, 0, 0.07 * (0.25 + light(dir)), { delay: delayOf(dir) });
-        }
-
         // The Space Station's orbit, plate style: a dashed ring 400 km up, inclined 51.6° to the
         // equator, drawn from the station onward; and the station, a point of light.
         const iss = lineSet();
@@ -182,28 +187,32 @@ export function tierra(): WorldModule {
           const rr = Math.abs(gauss(r)) * 0.06;
           station.push(a.x + x * rr, a.y + y * rr, a.z + z * rr, 0xfff4e8, 0.1, 0, 0.12);
         }
-        return { main: b.data(), iss: iss.data(), station: station.data() };
+        return { iss: iss.data(), station: station.data() };
       },
       assemble(data) {
-        const cloud = cloudFromData(data.main as PointsData, 1, 1);
-        // Only the near side shows: points test depth against the dark core.
-        (cloud.points.material as THREE.ShaderMaterial).depthTest = true;
-        // The station's orbit and the station hide behind the planet too.
+        // The station's orbit and the station hide behind the planet (its photograph writes depth).
         const iss = linesFromData(data.iss as LinesData, 0xff5b2e);
         (iss.mesh.material as THREE.ShaderMaterial).depthTest = true;
         const station = cloudFromData(data.station as PointsData, 1, 1);
         (station.points.material as THREE.ShaderMaterial).depthTest = true;
-        const core = new THREE.Mesh(new THREE.SphereGeometry(R_EARTH * 0.995, 96, 48), new THREE.MeshBasicMaterial({ color: 0x000000 }));
-        core.renderOrder = -2;
         const object = new THREE.Group();
-        object.add(core, cloud.points, iss.mesh, station.points);
+        object.add(iss.mesh, station.points);
+        const earth = tierraReal();
         return {
           object,
-          clouds: [cloud, station],
+          clouds: [station],
           update(f) {
-            cloud.u.uReveal.value = f.tl.get('tierra.form', f.p);
-            cloud.u.uFlagAlpha.value = standIn(f.alphaOf('valle'), f.e, f.home);
-            core.visible = f.alpha > 0.05;
+            const form = f.tl.get('tierra.form', f.p);
+            const b = earth.body;
+            if (b) {
+              if (b.group.parent !== object) object.add(b.group);
+              earth.u.uForm.value = form;
+              earth.u.uHueco.value = f.alphaOf('valle');
+              b.brilloHalo = smoothstep(0.5, 1, form);
+              mover(b, f, SUN_DIR, f.alpha);
+              // The clouds have no hook of their own: they come in with the last of the planet.
+              if (earth.nubes) earth.nubes.uniforms.uGain.value *= smoothstep(0.55, 0.95, form);
+            }
             const orbit = f.tl.get('iss.form', f.p);
             iss.uniforms.uReveal.value = orbit;
             iss.uniforms.uAlpha.value = f.alpha * smoothstep(0, 0.05, orbit) * (1 - f.tl.get('iss.away', f.p));
@@ -217,9 +226,10 @@ export function tierra(): WorldModule {
       // far out: drifting there sooner would take the camera through the Earth.
       const A = TIERRA.anchor;
       // (The planet has begun to assemble round the valley during the valley's moment.)
-      tl.set({ 'tierra.tx': A.x, 'tierra.ty': A.y, 'tierra.tz': A.z });
-      // The ground curves away beneath us and becomes a planet, assembled outward from our valley.
-      tl.with(5.0, { e: w.home - 0.2, 'tierra.form': 1, yaw: 0, pitch: 0, roll: 0, fov: 40 });
+      tl.set({ 'tierra.tx': A.x, 'tierra.ty': A.y, 'tierra.tz': A.z, giro: 0 });
+      // The ground curves away beneath us and becomes a planet, assembled outward from our valley,
+      // turning as it does until its north is up.
+      tl.with(5.0, { e: w.home - 0.2, 'tierra.form': 1, yaw: 0, pitch: 0, roll: 0, fov: 40, giro: GIRO_TIERRA });
       tl.wait(2.6);
       tl.to(2.4, { 'tierra.tx': 0, 'tierra.ty': 0, 'tierra.tz': 0 });
       tl.label('tierra');

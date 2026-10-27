@@ -29,6 +29,10 @@ export interface WorldFrame {
   alpha: number;
   /** Another world's visibility (to hide a stand-in while the real thing shows). */
   alphaOf(id: string): number;
+  /** The camera, its focal length in device pixels and the pixel ratio (for the Horizontes bodies). */
+  camera: THREE.Camera;
+  focal: number;
+  dpr: number;
 }
 
 /** An annotation of the plate layer (key I): a point in the world's own units, and its name. */

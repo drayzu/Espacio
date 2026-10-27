@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import { gauss, rng, smoothstep } from '../lib/math';
-import { perlin3 } from '../lib/puntos';
 import { standIn, type WorldModule } from '../engine/cadena';
 import { cloudBuilder, cloudFromData, type PointsData } from '../engine/points';
-import { R_EARTH, SUN_DIR, TIERRA } from './tierra';
+import { GIRO_TIERRA, R_EARTH, SUN_DIR, TIERRA } from './tierra';
 import { SOLAR } from './solar';
+import { TEXTURAS, mover, unaVez } from '../engine/cuerpos';
+import { luna as lunaH, mercurio, venus, marte, jupiter, saturno, urano, neptuno } from '../horizontes';
 
 /**
  * The Earth and the Moon. 1 unit = 100 000 km; the Earth at the origin, the Moon on its orbit
@@ -44,6 +45,49 @@ const travelTo = (() => {
   return { valle, tierra };
 })();
 
+/**
+ * Its sentence drawn: every other planet, side by side, fits between the Earth and the Moon. To
+ * scale (radii in units of 100 000 km), from the Earth's surface out (shrunk by a hair so Neptune
+ * clears the Moon at this mean distance); `delay` is when each appears as the row draws itself.
+ */
+const ROW = (() => {
+  const RADII: [number, number][] = [
+    [0.0244, 0],
+    [0.0605, 0],
+    [0.0339, 0],
+    [0.6991, 0.05],
+    [0.5823, 0.47],
+    [0.2536, 0],
+    [0.2462, 0.49],
+  ];
+  const Re = R_EARTH / 100;
+  const u = LUNA.pos.clone().normalize();
+  const gap = LUNA.pos.length() - Re - Rm;
+  const fit = (gap / RADII.reduce((acc, [rad]) => acc + 2 * rad, 0)) * 0.995;
+  let along = Re;
+  return RADII.map(([rad0, tilt]) => {
+    const r = rad0 * fit;
+    const c = u.clone().multiplyScalar(along + r);
+    along += 2 * r;
+    return { c, r, tilt, delay: (along / LUNA.pos.length()) * 0.85 };
+  });
+})();
+
+/**
+ * The Moon and the planets of the row as Horizontes draws them, from real maps, made once. The
+ * planets of the row are small on screen: fewer points than the Horizontes defaults.
+ */
+const lunaReal = unaVez(() => lunaH(TEXTURAS));
+const filaReal = unaVez(() => [
+  mercurio(TEXTURAS, { puntos: 40000 }),
+  venus(TEXTURAS, { puntos: 60000 }),
+  marte(TEXTURAS, { puntos: 50000 }),
+  jupiter(TEXTURAS, { puntos: 220000 }),
+  saturno(TEXTURAS, { puntos: 180000, puntosAnillos: 220000 }),
+  urano(TEXTURAS, { puntos: 110000 }),
+  neptuno(TEXTURAS, { puntos: 110000 }),
+]);
+
 export function luna(): WorldModule {
   const frameCenter = new THREE.Vector3(LUNA.pos.x * 0.42, 0, LUNA.pos.z * 0.42);
   return {
@@ -68,7 +112,6 @@ export function luna(): WorldModule {
       ],
       generate() {
         const r = rng(151);
-        const noise = perlin3(152);
         const b = cloudBuilder(153);
         const Re = R_EARTH / 100;
 
@@ -78,10 +121,12 @@ export function luna(): WorldModule {
           const l = Math.max(0, x * SUN_DIR.x + y * SUN_DIR.y + z * SUN_DIR.z);
           b.push(x * Re, y * Re, z * Re, k % 3 ? 0x3f7fd0 : 0x6fbf6a, 0.006, 0, 0.05 + 0.6 * l, { flag: true });
         }
+        // Its soft halo, so an Earth a few pixels wide can still be found (as the Moon's, below).
+        const eh = cloudBuilder(159);
         for (let k = 0; k < 900; k++) {
-          const [x, y, z] = b.onSphere();
+          const [x, y, z] = eh.onSphere();
           const re = Math.abs(gauss(r)) * 0.09;
-          b.push(x * re, y * re, z * re, 0x6fa8ff, 0.012, 0, 0.05, { flag: true });
+          eh.push(x * re, y * re, z * re, 0x6fa8ff, 0.012, 0, 0.05);
         }
         // The orbit, drawn from the Moon's side outward.
         const o = cloudBuilder(156);
@@ -92,47 +137,7 @@ export function luna(): WorldModule {
           da = Math.atan2(Math.sin(da), Math.cos(da));
           o.push(Math.cos(a) * rad, 0.12 * Math.cos(a - LUNA.angle), Math.sin(a) * rad, 0xd8dce8, 0.008, 0, 0.06, { delay: 0.1 + (Math.abs(da) / Math.PI) * 0.6 });
         }
-        // The Earth as the Moon sees it: its day side, bright enough to stand out from 400 000 km
-        // (the Earth world's own points are far below a pixel there). Shown only for the Earthrise.
-        const ea = cloudBuilder(157);
-        for (let k = 0; k < 9000; k++) {
-          const [x, y, z] = ea.onSphere();
-          const sun = x * SUN_DIR.x + y * SUN_DIR.y + z * SUN_DIR.z;
-          if (sun < -0.05) continue;
-          const land = noise(x * 1.6 + 9, y * 1.6, z * 1.6, 3) > 0.12;
-          const cloud = noise(x * 4 + 3, y * 4, z * 4, 3) > 0.25;
-          const hex = cloud ? 0xf4f6ff : land ? 0x8fae6a : 0x3f7fd0;
-          const l = smoothstep(-0.05, 0.3, sun) * (0.5 + 0.5 * sun);
-          ea.push(x * Re * 1.004, y * Re * 1.004, z * Re * 1.004, hex, 0.012, 0, (cloud ? 0.26 : 0.2) * l);
-        }
-
-        // The Moon, fine enough to be seen up close: maria and highlands, and craters (bright rims,
-        // darker floors), lit by the same sun with a soft terminator.
-        const m = cloudBuilder(154);
         const M = LUNA.pos;
-        const craters: { c: THREE.Vector3; r: number }[] = [];
-        for (let k = 0; k < 260; k++) {
-          const [x, y, z] = m.onSphere();
-          craters.push({ c: new THREE.Vector3(x, y, z), r: 0.015 + Math.pow(r(), 3) * 0.22 });
-        }
-        const n = new THREE.Vector3();
-        for (let k = 0; k < 70000; k++) {
-          const [x, y, z] = m.onSphere();
-          n.set(x, y, z);
-          let albedo = noise(x * 2.2, y * 2.2, z * 2.2, 3) > 0.1 ? 0.55 : 1;
-          let rim = 0;
-          for (const cr of craters) {
-            const d = n.distanceTo(cr.c);
-            if (d > cr.r * 1.25) continue;
-            const t = d / cr.r;
-            if (t < 0.85) albedo *= 0.8;
-            else rim = Math.max(rim, 1 - Math.abs(t - 1) / 0.25);
-          }
-          const sun = x * SUN_DIR.x + y * SUN_DIR.y + z * SUN_DIR.z;
-          const l = smoothstep(-0.08, 0.35, sun) * (0.55 + 0.45 * Math.max(0, sun)) * (albedo + rim * 0.5);
-          const hex = albedo < 0.7 ? 0xa8a8b0 : 0xe4e4ea;
-          m.push(M.x + x * Rm, M.y + y * Rm, M.z + z * Rm, hex, 0.0009, 0, 0.006 + 0.05 * l, { delay: 0.5 });
-        }
         // Soft halo, so a Moon a pixel wide can still be found.
         const h = cloudBuilder(155);
         for (let k = 0; k < 900; k++) {
@@ -145,74 +150,51 @@ export function luna(): WorldModule {
         const bc = cloudBuilder(158);
         for (let k = 0; k < 5; k++) bc.push(gauss(r) * 0.01, gauss(r) * 0.01, gauss(r) * 0.01, 0x5f94ff, 0.006, 0, 0.32, { star: true });
         for (let k = 0; k < 3; k++) bc.push(M.x + gauss(r) * 0.003, M.y + gauss(r) * 0.003, M.z + gauss(r) * 0.003, 0xdcdce4, 0.002, 0, 0.3, { star: true });
-        // Its sentence drawn: every other planet, side by side, fits between the Earth and the
-        // Moon. To scale (radii in units of 100 000 km), lit by the same sun, from the Earth's
-        // surface out (shrunk by a hair so Neptune clears the Moon at this mean distance).
-        const row = cloudBuilder(159);
-        const PL: [number, number[], number][] = [
-          [0.0244, [0xa8a29a], 400],
-          [0.0605, [0xe8d8a8], 900],
-          [0.0339, [0xc8603a], 600],
-          [0.6991, [0xe0c49a, 0xc8986a, 0xf0e4d0], 9000],
-          [0.5823, [0xe6d2a0, 0xd4bc88], 7500],
-          [0.2536, [0xa6dce4], 3200],
-          [0.2462, [0x6a8cf0, 0x5070d8], 3200],
-        ];
-        const u = LUNA.pos.clone().normalize();
-        const gap = LUNA.pos.length() - Re - Rm;
-        const fit = gap / PL.reduce((acc, [rad]) => acc + 2 * rad, 0) * 0.995;
-        let along = Re;
-        for (const [rad0, hexes, n] of PL) {
-          const rad = rad0 * fit;
-          const c = u.clone().multiplyScalar(along + rad);
-          along += 2 * rad;
-          for (let k = 0; k < n; k++) {
-            const [x, y, z] = row.onSphere();
-            const sun = x * SUN_DIR.x + y * SUN_DIR.y + z * SUN_DIR.z;
-            if (sun < -0.1) continue;
-            // Bands for the giants: the colour follows latitude.
-            const hex = hexes[Math.floor(Math.abs(Math.sin(y * 9 + noise(x * 3, y * 3, z * 3, 2) * 1.5)) * hexes.length) % hexes.length];
-            const l = smoothstep(-0.1, 0.35, sun) * (0.5 + 0.5 * Math.max(0, sun));
-            row.push(c.x + x * rad, c.y + y * rad, c.z + z * rad, hex, rad * 0.05, 0, 0.1 * l, { delay: (along / LUNA.pos.length()) * 0.85 });
-          }
-        }
-        return { main: b.data(), moon: m.data(), halo: h.data(), orbit: o.data(), earth: ea.data(), beacon: bc.data(), row: row.data() };
+        return { main: b.data(), halo: h.data(), earthHalo: eh.data(), orbit: o.data(), beacon: bc.data() };
       },
       assemble(data) {
         const cloud = cloudFromData(data.main as PointsData, 1, 1);
-        const moon = cloudFromData(data.moon as PointsData, 1, 1);
         const halo = cloudFromData(data.halo as PointsData, 1, 1);
+        const earthHalo = cloudFromData(data.earthHalo as PointsData, 1, 1);
         const orbit = cloudFromData(data.orbit as PointsData, 1, 1);
-        const earth = cloudFromData(data.earth as PointsData, 1, 1);
         const beacon = cloudFromData(data.beacon as PointsData, 1, 1);
-        const row = cloudFromData(data.row as PointsData, 1, 1);
-        // Only the near sides show: the Moon's points test depth against its dark core, the
-        // Earth's against the Earth world's.
-        (moon.points.material as THREE.ShaderMaterial).depthTest = true;
-        (earth.points.material as THREE.ShaderMaterial).depthTest = true;
-        const core = new THREE.Mesh(new THREE.SphereGeometry(Rm * 0.99, 64, 32), new THREE.MeshBasicMaterial({ color: 0x000000 }));
-        core.position.copy(LUNA.pos);
-        core.renderOrder = -2;
+        // The Moon from its real map, its near side towards the Earth (Horizontes puts longitude 0,
+        // the sub-Earth point, on +x).
+        const moon = lunaReal();
+        moon.group.position.copy(LUNA.pos);
+        const toEarth = LUNA.pos.clone().negate().normalize();
+        moon.group.rotation.set(0, Math.atan2(-toEarth.z, toEarth.x), 0);
+        moon.group.scale.setScalar(Rm);
+        // The planets in a row, each where ROW puts it.
+        const row = filaReal();
+        ROW.forEach((pl, k) => {
+          const b = row[k];
+          b.group.position.copy(pl.c);
+          b.group.scale.setScalar(pl.r);
+          b.group.rotation.set(0, 0, 0);
+          if (pl.tilt) b.group.rotateX(pl.tilt);
+        });
         const object = new THREE.Group();
-        object.add(core, cloud.points, moon.points, halo.points, orbit.points, earth.points, beacon.points, row.points);
+        object.add(cloud.points, moon.group, halo.points, earthHalo.points, orbit.points, beacon.points, ...row.map((b) => b.group));
         return {
           object,
-          clouds: [cloud, moon, halo, orbit, earth, beacon, row],
+          clouds: [cloud, halo, earthHalo, orbit, beacon],
           update(f) {
             const form = f.tl.get('luna.form', f.p);
-            for (const c of [cloud, moon, halo, orbit]) c.u.uReveal.value = form;
+            for (const c of [cloud, halo, orbit]) c.u.uReveal.value = form;
+            mover(moon, f, SUN_DIR, smoothstep(0.45, 0.6, form) * f.alpha);
             // Close to the Moon its orbit would cut the frame (and pass by the camera): it comes
             // in as the camera pulls back.
             orbit.u.uGain.value = smoothstep(f.home - 1.3, f.home - 0.6, f.e);
-            earth.u.uGain.value = f.tl.get('luna.rise', f.p);
             cloud.u.uFlagAlpha.value = standIn(f.alphaOf('tierra'), f.e, f.home);
             // The halo is for finding a Moon a pixel wide: gone when it is close.
             halo.u.uGain.value = smoothstep(f.home - 1.2, f.home - 0.5, f.e);
+            earthHalo.u.uGain.value = halo.u.uGain.value;
             beacon.u.uGain.value = smoothstep(f.home + 0.15, f.home + 0.7, f.e);
-            // The planets in a row: drawn from the Earth out, gone before the Solar System.
-            row.u.uReveal.value = f.tl.get('luna.row', f.p);
-            row.u.uGain.value = 1 - smoothstep(f.home + 0.12, f.home + 0.4, f.e);
-            core.visible = f.alpha > 0.05;
+            // The planets in a row: they appear from the Earth out, gone before the Solar System.
+            const reveal = f.tl.get('luna.row', f.p);
+            const gone = 1 - smoothstep(f.home + 0.12, f.home + 0.4, f.e);
+            ROW.forEach((pl, k) => mover(row[k], f, SUN_DIR, smoothstep(pl.delay - 0.02, pl.delay + 0.08, reveal) * gone * f.alpha));
           },
         };
       },
@@ -250,7 +232,9 @@ export function luna(): WorldModule {
         'luna.ty': L.y,
         'luna.tz': L.z,
       });
-      tl.to(3.2, { e: 7.0, 'luna.rise': 1, ...EARTHRISE_VIEW, fov: 16 });
+      // (The picture, turned to show the Earth north up, turns back as the camera swings round.)
+      tl.set({ giro: GIRO_TIERRA });
+      tl.to(3.2, { e: 7.0, 'luna.rise': 1, ...EARTHRISE_VIEW, fov: 16, giro: 0 });
       tl.label('luna');
       tl.caption(2.8, 'La salida de la Tierra', 'Apollo 8, Nochebuena de 1968: la primera vez que alguien vio la Tierra asomar sobre el horizonte de otro mundo.');
       tl.to(2.6, { e: 6.96, ...EARTHRISE_VIEW_END, fov: 15 });

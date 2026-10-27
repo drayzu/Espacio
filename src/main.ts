@@ -15,6 +15,7 @@ import { createSound } from './engine/sonido';
 import { createLamina } from './engine/lamina';
 import { contactSheet } from './engine/contactos';
 import { crearMundos } from './mundos';
+import { AJUSTE } from './engine/cuerpos';
 import { lang, switchLang, tx } from './i18n';
 
 /**
@@ -157,6 +158,8 @@ const travel = new THREE.Vector3();
 const aimAt = new THREE.Vector3();
 const orbit = new THREE.Quaternion();
 const look = new THREE.Quaternion();
+const spin = new THREE.Quaternion();
+const SCREEN_AXIS = new THREE.Vector3(0, 0, 1);
 const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 const tint = new THREE.Color();
 const tintB = new THREE.Color();
@@ -212,7 +215,9 @@ function step(now: number) {
   mouse.y = damp(mouse.y, mouseTarget.y, 3, dt);
   orbit.setFromEuler(euler.set(tl.get('pitch', p), tl.get('yaw', p), tl.get('roll', p), 'YXZ'));
   look.setFromEuler(euler.set(calm.matches ? 0 : -mouse.y * 0.12, calm.matches ? 0 : mouse.x * 0.2, 0, 'YXZ'));
-  root.quaternion.copy(look).multiply(orbit).multiply(chain.view);
+  // `giro` turns the picture about the line of sight (the focus stays put): a planet seen north up.
+  spin.setFromAxisAngle(SCREEN_AXIS, tl.get('giro', p));
+  root.quaternion.copy(spin).multiply(look).multiply(orbit).multiply(chain.view);
 
   // Worlds.
   const focal = renderer.domElement.height / 2 / tanHalf;
@@ -227,7 +232,7 @@ function step(now: number) {
       c.u.uAlpha.value = w.alpha;
       c.u.uCamDist.value = camera.position.z;
     }
-    w.content.update?.({ time, p, e, home: w.home, tl, alpha: w.alpha, alphaOf });
+    w.content.update?.({ time, p, e, home: w.home, tl, alpha: w.alpha, alphaOf, camera, focal, dpr: post.dpr });
   }
 
   const a = chain.worlds[chain.segment];
@@ -298,5 +303,5 @@ if (new URLSearchParams(location.search).has('debug')) {
       return id;
     },
   });
-  Object.assign(window, { potencias: { chain, tl, camera, root, sound, post, renderer, sheet, step, seek: (b: number | null) => scroll.freeze(b) } });
+  Object.assign(window, { potencias: { chain, tl, camera, root, sound, post, renderer, sheet, step, cuerpos: AJUSTE, seek: (b: number | null) => scroll.freeze(b) } });
 }

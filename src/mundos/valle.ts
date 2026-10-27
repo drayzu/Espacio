@@ -17,11 +17,12 @@ import { TIERRA } from './tierra';
 const R_MIN = 0.006;
 const R_MAX = 12;
 const SUN = new THREE.Vector3(-0.55, 0.55, 0.35).normalize();
-// East and north on the valley floor, from the valley's place on the Earth.
+// East and north on the valley floor, from the valley's place on the Earth. The real map lies
+// turned on the Earth (see realAt in tierra.ts): its east, where the Andes rise, is towards −longitude here.
 const toLocal = TIERRA.anchorRot.clone().invert();
 const LON = Math.atan2(TIERRA.normal.z, TIERRA.normal.x);
 const LAT = Math.asin(TIERRA.normal.y);
-const EAST = new THREE.Vector3(-Math.sin(LON), 0, Math.cos(LON)).applyQuaternion(toLocal);
+const EAST = new THREE.Vector3(Math.sin(LON), 0, -Math.cos(LON)).applyQuaternion(toLocal);
 const NORTH = new THREE.Vector3(-Math.sin(LAT) * Math.cos(LON), Math.cos(LAT), -Math.sin(LAT) * Math.sin(LON)).applyQuaternion(toLocal);
 const at = (east: number, north: number) => ({ x: EAST.x * east + NORTH.x * north, z: EAST.z * east + NORTH.z * north });
 const lake = at(-1.8, -0.7);
