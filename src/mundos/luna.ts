@@ -4,7 +4,7 @@ import { standIn, type WorldModule } from '../engine/cadena';
 import { cloudBuilder, cloudFromData, type PointsData } from '../engine/points';
 import { GIRO_TIERRA, R_EARTH, SUN_DIR, TIERRA } from './tierra';
 import { SOLAR } from './solar';
-import { TEXTURAS, mover, unaVez } from '../engine/cuerpos';
+import { TEXTURAS, mover, puntos, unaVez } from '../engine/cuerpos';
 import { luna as lunaH, mercurio, venus, marte, jupiter, saturno, urano, neptuno } from '../horizontes';
 
 /**
@@ -77,15 +77,15 @@ const ROW = (() => {
  * The Moon and the planets of the row as Horizontes draws them, from real maps, made once. The
  * planets of the row are small on screen: fewer points than the Horizontes defaults.
  */
-const lunaReal = unaVez(() => lunaH(TEXTURAS));
+const lunaReal = unaVez(() => lunaH(TEXTURAS, { puntos: puntos(320000) }));
 const filaReal = unaVez(() => [
-  mercurio(TEXTURAS, { puntos: 40000 }),
-  venus(TEXTURAS, { puntos: 60000 }),
-  marte(TEXTURAS, { puntos: 50000 }),
-  jupiter(TEXTURAS, { puntos: 220000 }),
-  saturno(TEXTURAS, { puntos: 180000, puntosAnillos: 220000 }),
-  urano(TEXTURAS, { puntos: 110000 }),
-  neptuno(TEXTURAS, { puntos: 110000 }),
+  mercurio(TEXTURAS, { puntos: puntos(40000) }),
+  venus(TEXTURAS, { puntos: puntos(60000) }),
+  marte(TEXTURAS, { puntos: puntos(50000) }),
+  jupiter(TEXTURAS, { puntos: puntos(220000) }),
+  saturno(TEXTURAS, { puntos: puntos(180000), puntosAnillos: puntos(220000) }),
+  urano(TEXTURAS, { puntos: puntos(110000) }),
+  neptuno(TEXTURAS, { puntos: puntos(110000) }),
 ]);
 
 export function luna(): WorldModule {

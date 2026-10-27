@@ -5,11 +5,11 @@ import { cloudBuilder, cloudFromData, type PointsData } from '../engine/points';
 import { SUN_DIR } from './tierra';
 import { lineSet, linesFromData, type LinesData } from './lineas';
 import { LUNA } from './luna';
-import { TEXTURAS, mover, unaVez } from '../engine/cuerpos';
+import { TEXTURAS, mover, puntos, unaVez } from '../engine/cuerpos';
 import { saturno } from '../horizontes';
 
 /** Saturn as Horizontes draws it, made once. */
-const saturnoReal = unaVez(() => saturno(TEXTURAS));
+const saturnoReal = unaVez(() => saturno(TEXTURAS, { puntos: puntos(460000), puntosAnillos: puntos(600000) }));
 
 /**
  * The Solar System. 1 unit = 10¹¹ m (1 AU ≈ 1.496), the ecliptic in (x, z), y towards ecliptic

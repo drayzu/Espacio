@@ -3,7 +3,7 @@ import { gauss, rng, smoothstep } from '../lib/math';
 import type { WorldModule } from '../engine/cadena';
 import { cloudBuilder, cloudFromData, type PointsData } from '../engine/points';
 import { lineSet, linesFromData, type LinesData } from './lineas';
-import { TEXTURAS, mover, unaVez } from '../engine/cuerpos';
+import { TEXTURAS, mover, puntos, unaVez } from '../engine/cuerpos';
 import { tierra as tierraH, type Planeta } from '../horizontes';
 
 /**
@@ -60,7 +60,7 @@ export const SUN_DIR = normalAt(LAT0 + 0.35, LON0 - 0.55).normalize();
  * valley is seen from above and the Earth assembles round it in the clear.
  */
 async function nubesSinValle() {
-  const img = await createImageBitmap(await (await fetch(`${TEXTURAS}2k_earth_clouds.jpg`)).blob());
+  const img = await createImageBitmap(await (await fetch(`${TEXTURAS}4k_earth_clouds.jpg`)).blob());
   const c = document.createElement('canvas');
   c.width = img.width;
   c.height = img.height;
@@ -117,6 +117,9 @@ const tierraReal = unaVez(() => {
   const t = { u, body: null as Planeta | null, nubes: null as THREE.ShaderMaterial | null };
   nubesSinValle().then((url) => {
     const b = tierraH(TEXTURAS, {
+      // The 8K maps reduced to 4K (about 5 km a pixel): the ground stays sharp down to the valley.
+      mapa: `${TEXTURAS}4k_earth_daymap.jpg`,
+      puntos: puntos(520000),
       nubes: url,
       superficie: { pre: 'uniform vec3 uValle; uniform float uForm, uHueco;', glsl: SUPERFICIE, uniforms: u },
     });

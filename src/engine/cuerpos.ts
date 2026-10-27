@@ -21,6 +21,16 @@ import type { Marco } from '../horizontes';
 /** Where the maps are served from. */
 export const TEXTURAS = `${import.meta.env.BASE_URL}texturas/`;
 
+/**
+ * How many points a body gets: half on phones and small touch screens (as post.ts renders them
+ * fewer pixels). Asked when the body is made, on the main thread (the worlds' modules also load
+ * in the workers, where there is no window).
+ */
+export function puntos(n: number) {
+  const ligero = matchMedia('(pointer: coarse)').matches || Math.min(innerWidth, innerHeight) < 600;
+  return ligero ? Math.round(n / 2) : n;
+}
+
 /** A body made on first use and kept. */
 export function unaVez<T>(make: () => T) {
   let v: T | null = null;
