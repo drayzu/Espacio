@@ -1,6 +1,6 @@
 """The README's cover: the title and its phrase, and right below, the hero clip, whole and untouched.
 
-    python tools/readme_cover.py   ->  docs/media/cover-<theme>.avif / .webp
+    python tools/readme_cover.py   ->  docs/media/portada-<theme>.avif / .webp
 
 One image, so the title reads as the clip's own: a quiet band with the title on top, the clip below,
 blended into the page. Drawn at 1840 px wide (text included) at 30 fps; AVIF for the page and a
@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 TITLE = 'Espacio'
-PHRASE = 'Everything is made of something smaller.'
+PHRASE = 'From a quark to the edge of everything.'
 FRAMES, COUNT, CROP = 'tools/src/frames/hero', 270, (0, 0, 1280, 720)   # 1280 x 720 JPG at 30 fps
 CRF = 34
 
@@ -71,7 +71,7 @@ def main():
         txt = band(th, BAND)
         ta = txt[..., 3:4]
         top = txt[..., :3] * ta + page * (1 - ta)
-        dst = os.path.join(OUT, f'cover-{theme}')
+        dst = os.path.join(OUT, f'portada-{theme}')
         enc = subprocess.Popen(
             ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{PW}x{H}', '-r', str(FPS), '-i', '-',
              '-vf', 'scale=out_color_matrix=bt709:out_range=tv,format=yuv420p',
@@ -92,7 +92,7 @@ def main():
         enc.stdin.close()
         enc.wait()
         webp[0].save(dst + '.webp', save_all=True, append_images=webp[1:], duration=2000 // FPS, loop=0, quality=WEBP_Q, method=4)
-        print(f'  cover-{theme}: {len(seq)} frames  {PW}x{H}  avif {os.path.getsize(dst + ".avif") / 1e6:.2f} MB'
+        print(f'  portada-{theme}: {len(seq)} frames  {PW}x{H}  avif {os.path.getsize(dst + ".avif") / 1e6:.2f} MB'
               f'  webp {os.path.getsize(dst + ".webp") / 1e6:.2f} MB', flush=True)
 
 if __name__ == '__main__':

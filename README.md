@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://drayzu.github.io/Espacio/"><picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/cover-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/cover-dark.webp"><source type="image/avif" srcset="docs/media/cover-light.avif"><img src="docs/media/cover-light.webp" width="100%" alt="Espacio — Everything is made of something smaller. One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture></a>
+  <a href="https://drayzu.github.io/Espacio/"><picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/portada-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/portada-dark.webp"><source type="image/avif" srcset="docs/media/portada-light.avif"><img src="docs/media/portada-light.webp" width="100%" alt="Espacio — From a quark to the edge of everything. One scroll: a cell, the tissue around it, a leaf, a tree, a valley, the Earth."></picture></a>
 </p>
 
 <p align="center">
