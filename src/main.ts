@@ -109,6 +109,22 @@ const scroll = createScroll(document.querySelector<HTMLElement>('#spacer')!, tl.
 const dust = createScaleDust(post.dpr);
 scene.add(dust.points);
 const sound = createSound();
+// The sound is not polished yet: its icon stays, faint, and says it comes soon (`soundReady` brings it back).
+const soundReady = false;
+const soundBtn = document.querySelector<HTMLButtonElement>('#sound')!;
+let told = 0;
+const toggleSound = () => {
+  if (soundReady) return sound.toggle();
+  soundBtn.classList.add('is-told');
+  clearTimeout(told);
+  told = window.setTimeout(() => soundBtn.classList.remove('is-told'), 1800);
+  return false;
+};
+if (!soundReady) {
+  soundBtn.classList.add('is-soon');
+  soundBtn.setAttribute('aria-disabled', 'true');
+  soundBtn.querySelector('.chip-t')!.textContent = tx('Sonido · pronto');
+}
 const lamina = createLamina(chain.worlds, camera);
 // `?lamina` opens the page with the plate layer on.
 if (new URLSearchParams(location.search).has('lamina')) queueMicrotask(() => hud.showPlate(lamina.toggle()));
@@ -120,7 +136,7 @@ const scaleBreaks = (() => {
 const hud = createHud(chain.worlds, (w) => tl.at(w.id), tl.length, {
   jump: (b) => scroll.jump(b),
   togglePlay: () => scroll.togglePlay(),
-  toggleSound: () => sound.toggle(),
+  toggleSound,
   arrive: () => sound.chime(),
   togglePlate: () => lamina.toggle(),
 }, (p) => tl.captionAt(p), (w) => starts.get(w.id) ?? 0);
@@ -147,7 +163,7 @@ addEventListener('keydown', (ev) => {
   if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
   const k = ev.key.toLowerCase();
   if (k === 'a') scroll.togglePlay();
-  if (k === 's') hud.showSound(sound.toggle());
+  if (k === 's') hud.showSound(toggleSound());
   if (k === 'i') hud.showPlate(lamina.toggle());
   if (k === 'l') switchLang();
 });

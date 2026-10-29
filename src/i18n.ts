@@ -45,6 +45,7 @@ const EN: Record<string, string> = {
   'Desliza para empezar': 'Scroll to begin',
   'Lámina': 'Plate',
   'Sonido': 'Sound',
+  'Sonido · pronto': 'Sound · soon',
   'Reproducir': 'Play',
   'Escala': 'Scale',
   'Fin del viaje': 'End of the journey',
