@@ -41,7 +41,7 @@ export function switchLang() {
 
 const EN: Record<string, string> = {
   // The page.
-  'Todo está hecho de algo más pequeño.': 'Everything is made of something smaller.',
+  'De un quark al borde de todo.': 'From a quark to the edge of everything.',
   'Desliza para empezar': 'Scroll to begin',
   'Lámina': 'Plate',
   'Sonido': 'Sound',
