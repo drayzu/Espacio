@@ -36,11 +36,11 @@
 <summary><sub>How it's made</sub></summary>
 <br>
 
-- 31 nested worlds at their real positions, kept in double precision relative to a pivot world, so no raw 10⁶⁰ ever reaches the GPU.
+- The first piece of Horizontes (Espacio · Tiempo · Destino · Infinito): one scroll, about eleven minutes, through 31 nested worlds, from the foam of the Planck length to the observable universe and the hypotheses beyond it.
+- Every world sits at its real position, kept in double precision relative to a pivot world, so no raw 10⁶⁰ ever reaches the GPU.
 - Everything is particles: worlds are generated in Web Workers and drawn as point clouds, with adaptive resolution to hold the frame rate.
-- Real data where it counts: star positions, the S stars' orbits around Sagittarius A*, Saturn's ring profile, Andromeda's direction and distance.
-- A plate layer with scientific notes and a scale bar that stays true at every scale. Sound is synthesized in the browser.
-- English and Spanish. Keys: `I` plates, `S` sound, `A` autoplay, `L` language.
+- Real data where it counts: star positions, the S stars' orbits around Sagittarius A*, Saturn's ring profile, Andromeda's direction and distance. A plate layer adds scientific notes and a scale bar that stays true at every scale.
+- English and Spanish. Keys: `A` autoplay, `I` plate, `L` language.
 - TypeScript, Three.js and Vite, no framework. `npm install`, `npm run dev`; pushing to `main` deploys to GitHub Pages.
 
 After *Powers of Ten*, by Charles and Ray Eames (1977).
