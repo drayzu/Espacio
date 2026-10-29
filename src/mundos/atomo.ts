@@ -30,8 +30,8 @@ export function atomo(): WorldModule {
     spec: {
       id: 'atomo',
       territory: 'atómico',
-      name: 'Átomo de carbono',
-      fact: 'Cuatro nubes de probabilidad: así se enlaza el carbono.',
+      name: 'Un átomo de carbono',
+      fact: 'Sigue a este. Con sus cuatro brazos se agarra a otros átomos, y así se arma todo lo vivo.',
       label: 'átomo',
       unitExp: -10,
       frame: 3.4,

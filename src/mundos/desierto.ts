@@ -47,7 +47,7 @@ export function desierto(): WorldModule {
     id: 'desierto',
     territory: 'desconocido',
     name: 'El desierto',
-    fact: 'Entre la unificación y lo que hemos visto: catorce órdenes de magnitud de los que no sabemos nada.',
+    fact: 'Ahora, catorce potencias de diez de las que no sabemos nada. Solo pasan los números.',
     label: 'desierto',
     unitExp: UNIT,
     anchor: new THREE.Vector3(),

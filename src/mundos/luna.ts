@@ -95,7 +95,7 @@ export function luna(): WorldModule {
       id: 'luna',
       territory: 'Sistema Solar',
       name: 'La Tierra y la Luna',
-      fact: 'Entre ambas cabrían todos los demás planetas del Sistema Solar, uno junto a otro.',
+      fact: 'Entre las dos cabrían todos los demás planetas, uno junto a otro.',
       label: 'Luna',
       unitExp: 8,
       anchor: SOLAR.earthPos,
@@ -236,7 +236,7 @@ export function luna(): WorldModule {
       tl.set({ giro: GIRO_TIERRA });
       tl.to(3.2, { e: 7.0, 'luna.rise': 1, ...EARTHRISE_VIEW, fov: 16, giro: 0 });
       tl.label('luna');
-      tl.caption(2.8, 'La salida de la Tierra', 'Apollo 8, Nochebuena de 1968: la primera vez que alguien vio la Tierra asomar sobre el horizonte de otro mundo.');
+      tl.caption(2.8, 'La salida de la Tierra', 'Nochebuena de 1968: por primera vez, alguien vio la Tierra asomar sobre el horizonte de otro mundo.');
       tl.to(2.6, { e: 6.96, ...EARTHRISE_VIEW_END, fov: 15 });
       // Then back, until the Earth and the Moon both fit, the orbit around them.
       // (Solved like the Earthrise: the orbit seen from 50° above its plane, the pair level.)

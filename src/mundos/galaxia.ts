@@ -107,7 +107,8 @@ export function galaxia(): WorldModule {
       id: 'galaxia',
       territory: 'Vía Láctea',
       name: 'La Vía Láctea',
-      fact: 'Unos 200 mil millones de estrellas. El Sol tarda 230 millones de años en dar una vuelta.',
+      fact: 'Doscientos mil millones de soles. El nuestro es uno.',
+      ficha: ['el Sol tarda 230 millones de años en dar una vuelta'],
       label: 'Vía Láctea',
       unitExp: 19,
       frame: 130,
@@ -328,7 +329,7 @@ export function galaxia(): WorldModule {
       // Rise to see the spiral whole; the Sun's orbit draws itself, one galactic year.
       tl.set({ 'gal.year': 0 });
       tl.to(1.4, { yaw: 0.25, pitch: 0.12, e: w.home - 0.03, fov: 44 });
-      tl.caption(3.4, 'Un año galáctico', 'La vez anterior que el Sol pasó por este punto de su órbita, aparecían los primeros dinosaurios.');
+      tl.caption(3.4, 'Un año galáctico', 'La última vez que el Sol pasó por aquí, aparecían los primeros dinosaurios.');
       tl.to(3.4, { yaw: 0.75, pitch: 0.35, e: w.home + 0.1, fov: 46, 'gal.year': 1 });
 
       // Sagittarius A*. The aim holds the framing on the centre and the view on the galaxy's own
@@ -336,7 +337,7 @@ export function galaxia(): WorldModule {
       tl.set({ 'gal.dive': 0, 'galaxia.keep': 0, 'galaxia.aim': 0, 'galaxia.ax': 0, 'galaxia.ay': 0, 'galaxia.az': 0, 'gal.t': 2002 });
       // The caption covers the whole way down and back: the scale passes those of other worlds,
       // whose names must not show here.
-      tl.caption(17.2, 'Sagitario A*', 'Estrellas que giran a miles de kilómetros por segundo alrededor de algo invisible: un agujero negro de cuatro millones de soles.');
+      tl.caption(17.2, 'Sagitario A*', 'Estrellas que giran a toda velocidad alrededor de algo que no se ve: un agujero negro de cuatro millones de soles.');
       tl.to(2.8, { 'galaxia.aim': 1, 'galaxia.keep': 1, 'gal.dive': 1, e: w.home - 1.9, yaw: 0.25, pitch: -0.15 });
       tl.to(2.6, { e: 17.4, ...SGR_APPROACH });
       tl.to(2.6, { e: SGR_E, ...SGR_VIEW, fov: 40 });

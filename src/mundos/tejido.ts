@@ -82,8 +82,8 @@ export function tejido(): WorldModule {
     spec: {
       id: 'tejido',
       territory: 'vida',
-      name: 'Epidermis de una hoja',
-      fact: 'Células como la nuestra, una junto a otra. Algunas forman poros: así respira la hoja.',
+      name: 'Una hoja respira',
+      fact: 'Por estos poros respira la hoja. El carbono que seguías entró por aquí, en el aire. Quizá lo exhalaste tú.',
       label: 'tejido',
       unitExp: -5,
       frame: 14,
@@ -212,6 +212,19 @@ export function tejido(): WorldModule {
       tl.label('tejido');
       // Tilt: the tissue is a living sheet.
       tl.to(2.4, { pitch: 0.75, yaw: 0.35, fov: 50, e: w.home + 0.05 });
+      // GUION.md 20 · Halfway: between the foam (10⁻³⁵ m) and the edge of what we see (10²⁷ m), the
+      // middle is here, about a tenth of a millimetre. The camera all but stops, and you are back:
+      // that is the size you were as a single cell.
+      tl.caption(
+        5.4,
+        'A mitad de camino',
+        'Entre lo más pequeño y el borde de lo que vemos, la mitad del camino cae aquí: un décimo de milímetro. Ese tamaño tenías cuando eras una sola célula.',
+        'la mitad',
+        ['entre la longitud de Planck (1,6 × 10⁻³⁵ m) y el universo observable (8,8 × 10²⁶ m), la media geométrica es 1,2 × 10⁻⁴ m', 'un óvulo humano mide unos 0,1 mm'],
+      );
+      tl.with(1.2, { tu: 1 });
+      tl.to(4.2, { e: w.home + 0.09, yaw: 0.42 });
+      tl.to(1.2, { tu: 0, e: w.home + 0.1, yaw: 0.45 });
     },
   };
 }

@@ -65,6 +65,8 @@ export interface WorldSpec {
   name: string;
   /** One sentence. */
   fact: string;
+  /** The plate's data (key I): the figures and sources the sentence leaves out. */
+  ficha?: string[];
   /** Short label for the scale ruler. */
   label: string;
   /** log10 of metres per local unit. */

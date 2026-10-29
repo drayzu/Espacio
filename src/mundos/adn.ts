@@ -64,8 +64,8 @@ export function adn(): WorldModule {
     spec: {
       id: 'adn',
       territory: 'molecular',
-      name: 'ADN · doble hélice',
-      fact: 'Cada punto de luz es un átomo. Nuestro carbono es uno de ellos.',
+      name: 'ADN',
+      fact: 'Cada punto de luz es un átomo; el que seguías es uno de ellos. Cada célula tuya guarda una escalera como esta.',
       label: 'ADN',
       unitExp: -9,
       frame: 6,

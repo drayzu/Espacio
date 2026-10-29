@@ -73,7 +73,7 @@ export function planck(): WorldModule {
       id: 'planck',
       territory: 'hipotético',
       name: 'Espuma de Planck',
-      fact: 'Hipótesis: a esta escala el propio espacio burbujea, y quizá todo sean cuerdas vibrando.',
+      fact: 'Nadie lo ha visto: es una hipótesis. A esta escala el espacio burbujea, y quizá todo sean cuerdas que vibran.',
       label: 'Planck',
       unitExp: -35,
       frame: 8,
@@ -197,7 +197,7 @@ export function planck(): WorldModule {
       },
     },
     choreo(tl, w) {
-      tl.set({ e: w.home + 0.05, yaw: -0.3, pitch: 0.15, roll: 0, fov: 40 });
+      // The opening (engine/apertura.ts) lands here, at this scale and angle, with the title.
       tl.wait(0.6);
       tl.label('planck');
       // Drift through the foam.

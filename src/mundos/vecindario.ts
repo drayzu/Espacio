@@ -61,7 +61,8 @@ export function vecindario(): WorldModule {
       id: 'vecindario',
       territory: 'Vía Láctea',
       name: 'Las estrellas vecinas',
-      fact: 'Unas treinta estrellas a menos de doce años luz; la mayoría, enanas rojas demasiado tenues para verlas a simple vista.',
+      fact: 'Treinta estrellas cerca de nosotros, y casi ninguna se ve a simple vista.',
+      ficha: ['unas treinta estrellas a menos de doce años luz, casi todas enanas rojas', 'Próxima Centauri: a 4,24 años luz'],
       label: 'vecinas',
       unitExp: 16,
       // At the centre of our corner of the galaxy, turned from the ecliptic to the galactic frame.
@@ -172,7 +173,7 @@ export function vecindario(): WorldModule {
       });
       tl.set({ 'vec.light': 0, 'vec.after': 0 });
       tl.to(2.2, { e: w.home - 0.75, yaw: 0.1, pitch: 0.3, fov: 44, ...travel(1) });
-      tl.caption(3.2, 'La luz de Próxima', 'Sale de la estrella más cercana y tarda más de cuatro años en llegar: la vemos como era entonces.');
+      tl.caption(3.2, 'La luz de Próxima', 'Esa luz salió hace más de cuatro años. Ves la estrella como era entonces.');
       tl.with(3.2, { 'vec.light': 1 }, (t) => t);
       tl.to(3.2, { e: w.home - 0.7, yaw: 0.25, pitch: 0.32 });
       // Then back out among the neighbours.

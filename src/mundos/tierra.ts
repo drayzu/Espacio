@@ -151,7 +151,8 @@ export function tierra(): WorldModule {
       id: 'tierra',
       territory: 'Tierra',
       name: 'La Tierra',
-      fact: 'Ocho mil millones de personas, y todo lo vivo que conocemos, en una sola esfera.',
+      fact: 'Todos los que has conocido están aquí. Y todos los que no.',
+      ficha: ['unos 8 200 millones de personas', 'la Estación Espacial: a 400 km, una vuelta cada hora y media'],
       label: 'Tierra',
       unitExp: 6,
       frame: 20,
@@ -239,7 +240,7 @@ export function tierra(): WorldModule {
       // A slow orbit; the Space Station's orbit draws itself round the globe.
       tl.set({ 'iss.form': 0, 'iss.away': 0 });
       tl.to(1.0, { yaw: 0.3, pitch: 0.06, e: w.home - 0.15 });
-      tl.caption(3.0, 'La Estación Espacial', 'A 400 km de altura, una vuelta cada hora y media: lo más lejos de la Tierra que vive gente hoy.');
+      tl.caption(3.0, 'La Estación Espacial', 'Lo más lejos de la Tierra que vive alguien hoy: a cuatrocientos kilómetros.');
       tl.to(3.0, { yaw: 0.9, pitch: 0.18, e: w.home + 0.05, 'iss.form': 1 });
       // It fades as the Moon's journey begins.
       tl.with(1.2, { 'iss.away': 1 });

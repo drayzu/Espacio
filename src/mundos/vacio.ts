@@ -29,7 +29,7 @@ export function vacio(): WorldModule {
     id: 'vacio',
     territory: 'atómico',
     name: 'El vacío del átomo',
-    fact: 'Si el núcleo fuera una canica, el átomo sería un estadio.',
+    fact: 'Si el núcleo fuera una canica, el átomo sería un estadio. Tú también eres casi todo vacío.',
     label: 'vacío',
     unitExp: UNIT,
     anchor: new THREE.Vector3(),

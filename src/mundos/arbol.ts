@@ -97,7 +97,7 @@ export function arbol(): WorldModule {
       id: 'arbol',
       territory: 'vida',
       name: 'Un árbol',
-      fact: 'Unas once mil hojas, cada una con su red de nervaduras, cada nervadura hecha de células.',
+      fact: 'Once mil hojas, y en cada una, millones de células.',
       label: 'árbol',
       unitExp: 0,
       frame: 16,
@@ -195,8 +195,14 @@ export function arbol(): WorldModule {
     },
     choreo(tl, w) {
       tl.set({ 'arbol.grow': 0 });
-      // The tree grows from our leaf back to the trunk and out into the crown.
-      tl.to(4.4, { e: w.home - 0.2, 'arbol.grow': 1, yaw: 0, pitch: 0.05, roll: 0, fov: 42 });
+      // The tree grows from our leaf back to the trunk and out into the crown. Halfway, the scale is
+      // your own (10⁰ m), where the opening began its fall (GUION.md 23): the point again, a moment.
+      tl.to(2.2, { e: -0.02, 'arbol.grow': 0.4, yaw: 0.2, pitch: 0.3, roll: 0.05, fov: 44 });
+      tl.caption(4.0, 'Tu tamaño', 'Volviste a tu tamaño. Aquí empezó la caída.', 'tú');
+      tl.with(1.0, { tu: 1 });
+      tl.to(3.0, { e: 0.06, 'arbol.grow': 0.5 });
+      tl.to(1.0, { tu: 0, e: 0.1 });
+      tl.to(2.8, { e: w.home - 0.2, 'arbol.grow': 1, yaw: 0, pitch: 0.05, roll: 0, fov: 42 });
       tl.label('arbol');
       // Walk around it.
       tl.to(2.8, { yaw: 0.8, pitch: -0.06, e: w.home + 0.05, fov: 48 });

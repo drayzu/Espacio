@@ -87,7 +87,8 @@ export function solar(): WorldModule {
       id: 'solar',
       territory: 'Sistema Solar',
       name: 'El Sistema Solar',
-      fact: 'La luz del Sol tarda ocho minutos en llegar a la Tierra, y más de cuatro horas en llegar a Neptuno.',
+      fact: 'La luz del Sol tarda ocho minutos en llegarte. A Neptuno, más de cuatro horas.',
+      ficha: ['la luz: 8 min hasta la Tierra, 4 h hasta Neptuno', 'los anillos de Saturno: 280 000 km de punta a punta, unas decenas de metros de grosor', 'de la Tierra a la Luna: 384 000 km'],
       label: 'Sistema Solar',
       unitExp: 11,
       frame: 26,
@@ -254,7 +255,7 @@ export function solar(): WorldModule {
       // the focus while the view is already small would sweep the planet out of frame.
       tl.set({ sat: 0, 'solar.keep': 0 });
       tl.to(2.4, { ...travel(1), e: 12.4, sat: 1, 'solar.keep': 1, fov: 40 });
-      tl.caption(7.2, 'Saturno', 'Sus anillos miden 280 000 km de punta a punta y apenas unas decenas de metros de grosor: de canto, casi desaparecen.');
+      tl.caption(7.2, 'Saturno', 'Sus anillos cubrirían tres cuartos del camino a la Luna, y son tan delgados que de canto desaparecen.');
       tl.to(2.8, { e: SAT_E, ...SAT_VIEW, fov: 36 });
       tl.to(2.6, { e: SAT_E + 0.02, ...SAT_EDGE });
       // Back up, still on Saturn, then glide back to the whole system.

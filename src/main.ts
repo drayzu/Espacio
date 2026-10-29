@@ -13,14 +13,17 @@ import { createScaleDust } from './engine/polvo';
 import { createHud } from './engine/hud';
 import { createSound } from './engine/sonido';
 import { createLamina } from './engine/lamina';
+import { aperturaChoreo, createApertura } from './engine/apertura';
+import { codaChoreo, DIAMETRO } from './engine/coda';
 import { contactSheet } from './engine/contactos';
 import { crearMundos } from './mundos';
 import { AJUSTE } from './engine/cuerpos';
 import { lang, switchLang, tx } from './i18n';
 
 /**
- * Espacio. The journey is a chain of world modules, smallest first. Each brings its own
- * choreography; together they form one timeline that the page scroll moves through.
+ * Espacio. The journey opens on you, a point in the black, and falls to the foam (engine/apertura.ts);
+ * from there it is a chain of world modules, smallest first. Each brings its own choreography;
+ * together they form one timeline that the page scroll moves through.
  */
 
 const MODULES: WorldModule[] = crearMundos();
@@ -75,6 +78,7 @@ const chain = new Chain(
 for (const w of chain.worlds) {
   w.name = tx(w.name);
   w.fact = tx(w.fact);
+  w.ficha = w.ficha?.map(tx);
   w.label = tx(w.label);
   w.territory = tx(w.territory);
   for (const n of w.notes ?? []) n.text = tx(n.text);
@@ -96,14 +100,17 @@ langBtn.setAttribute('aria-label', lang === 'en' ? 'Ver en español' : 'View in 
 langBtn.addEventListener('click', switchLang);
 
 const tl = new Timeline({ e: chain.worlds[0].home, yaw: 0, pitch: 0, roll: 0, fov: 36 });
+// The opening: from you down to the foam, where the first world takes over.
+const FONDO = chain.worlds[0].home;
+aperturaChoreo(tl, FONDO);
 // Where each world's stretch of the journey begins (its arrival), for the ruler.
 const starts = new Map<string, number>();
 MODULES.forEach((m, i) => {
   starts.set(chain.worlds[i].id, tl.length);
   m.choreo(tl, chain.worlds[i]);
 });
-// A last breath on the final world, for the closing line.
-tl.wait(1.2);
+// The coda: back to our universe, which runs backwards into a point, and on to Tiempo.
+codaChoreo(tl, chain.worlds.find((w) => w.id === 'universo')!.home);
 
 const scroll = createScroll(document.querySelector<HTMLElement>('#spacer')!, tl.length);
 const dust = createScaleDust(post.dpr);
@@ -140,7 +147,8 @@ const hud = createHud(chain.worlds, (w) => tl.at(w.id), tl.length, {
   arrive: () => sound.chime(),
   togglePlate: () => lamina.toggle(),
 }, (p) => tl.captionAt(p), (w) => starts.get(w.id) ?? 0);
-chain.prebuild(tl.get('e', 0));
+// The foam first: the journey opens far above it, but it is the first world to show.
+chain.prebuild(FONDO);
 
 /**
  * Worlds are framed by height. On a portrait screen that would crop them at the sides, so the
@@ -155,6 +163,8 @@ addEventListener('resize', () => {
   post.resize();
   refit();
 });
+
+const apertura = createApertura(scene, VIEW_H);
 
 const mouse = new THREE.Vector2();
 const mouseTarget = new THREE.Vector2();
@@ -176,6 +186,7 @@ const orbit = new THREE.Quaternion();
 const look = new THREE.Quaternion();
 const spin = new THREE.Quaternion();
 const SCREEN_AXIS = new THREE.Vector3(0, 0, 1);
+const shrink = new THREE.Matrix4();
 const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 const tint = new THREE.Color();
 const tintB = new THREE.Color();
@@ -193,8 +204,11 @@ function step(now: number) {
 
   const p = scroll.update(dt);
   const e = tl.get('e', p);
-  const zoomSpeed = (e - prevE) / Math.max(dt, 1e-3);
-  prevE = e;
+  // The coda shrinks the universe instead of moving the camera (orders of magnitude): for the dust
+  // and the blur that reads as pulling away.
+  const encoge = tl.get('encoge', p);
+  const zoomSpeed = (e + encoge - prevE) / Math.max(dt, 1e-3);
+  prevE = e + encoge;
 
   // Dolly zoom: the field of view changes, the scale at the focus does not.
   const fov = tl.get('fov', p);
@@ -206,6 +220,8 @@ function step(now: number) {
   camera.near = Math.max(0.001, camera.position.z * 1e-5);
   camera.updateProjectionMatrix();
 
+  // The opening's veil: while it is on, no world shows (the fall passes all of them).
+  const velo = tl.get('velo', p);
   chain.place(
     e,
     VIEW_H / fit,
@@ -214,7 +230,7 @@ function step(now: number) {
       travel.set(tl.get(`${id}.tx`, p), tl.get(`${id}.ty`, p), tl.get(`${id}.tz`, p));
       return travel.lengthSq() > 0 ? travel : null;
     },
-    (i) => tl.get(`${chain.worlds[i].id}.keep`, p),
+    (i) => (velo > 0.001 ? -velo : tl.get(`${chain.worlds[i].id}.keep`, p)),
     (i) => {
       const id = chain.worlds[i].id;
       const k = tl.get(`${id}.aim`, p);
@@ -224,7 +240,15 @@ function step(now: number) {
     },
   );
 
-  chain.warm(e);
+  // The coda: everything shrinks towards us, the centre of the frame.
+  if (encoge > 0.0001) {
+    const k = Math.pow(10, -Math.min(encoge, 6));
+    shrink.makeScale(k, k, k);
+    for (const w of chain.worlds) if (w.group.visible) w.group.matrix.premultiply(shrink);
+  }
+
+  // Building ahead is for the worlds the journey is about to show: during the fall, only near the foam.
+  if (velo < 0.5 || e < FONDO + 4) chain.warm(e);
 
   // Camera: the chain's view of the current worlds, the choreography's orbit, a little mouse.
   mouse.x = damp(mouse.x, mouseTarget.x, 3, dt);
@@ -235,8 +259,10 @@ function step(now: number) {
   spin.setFromAxisAngle(SCREEN_AXIS, tl.get('giro', p));
   root.quaternion.copy(spin).multiply(look).multiply(orbit).multiply(chain.view);
 
-  // Worlds.
+  // Worlds. In the coda the shrinking universe keeps its light: its points, smaller than a pixel,
+  // would dim by the area they lose; instead it gathers into a white-hot point (as it was).
   const focal = renderer.domElement.height / 2 / tanHalf;
+  const brillo = encoge > 0.0001 ? Math.min(40, Math.pow(10, 2 * encoge)) : 1;
   for (const w of chain.worlds) alphas.set(w.id, w.alpha);
   for (const w of chain.worlds) {
     if (!w.content || !w.group.visible) continue;
@@ -245,21 +271,30 @@ function step(now: number) {
       c.u.uFocal.value = focal;
       c.u.uMinPx.value = 1.6 * post.dpr;
       c.u.uMaxPx.value = 22 * post.dpr;
-      c.u.uAlpha.value = w.alpha;
+      c.u.uAlpha.value = w.alpha * brillo;
       c.u.uCamDist.value = camera.position.z;
     }
-    w.content.update?.({ time, p, e, home: w.home, tl, alpha: w.alpha, alphaOf, camera, focal, dpr: post.dpr });
+    w.content.update?.({ time, p, e, home: w.home, tl, alpha: w.alpha * brillo, alphaOf, camera, focal, dpr: post.dpr });
   }
 
   const a = chain.worlds[chain.segment];
   const b = chain.worlds[chain.segment + 1];
   tint.setHex(a.tint).lerp(tintB.setHex(b.tint), chain.blend);
-  dust.update(e, zoomSpeed, innerWidth / innerHeight, tint);
-  hud.update(e, p, scroll.playing, e + Math.log10(fit));
+  // During the fall the dust is the point's colour, not that of the worlds it passes unseen, and
+  // only shows while falling: before it, the point is alone in the black.
+  if (velo > 0.001) tint.lerp(tintB.setRGB(0.45, 1.0, 0.85).multiplyScalar(0.8 * Math.min(1, Math.abs(zoomSpeed) / 1.5)), velo);
+  // At the very end the point that hands on to Tiempo is alone in the black.
+  const tono = tl.get('tono', p);
+  if (tono > 1) tint.multiplyScalar(1 - 0.9 * Math.min(1, tono - 1));
+  dust.update(e + encoge, zoomSpeed, innerWidth / innerHeight, tint);
+  apertura.update(tl, p, e, fit, time);
+  // What the readout measures: the height on screen, or in the coda the universe's own size.
+  const seen = encoge > 0.0001 ? DIAMETRO - encoge : e + Math.log10(fit);
+  hud.update(e, p, scroll.playing, seen, { titulo: tl.get('titulo', p), cromo: tl.get('cromo', p), relevo: tl.get('relevo', p) });
   sound.update(e, zoomSpeed, chain.segment + (chain.blend > 0.5 ? 1 : 0));
 
   post.render(time, zoomSpeed);
-  lamina.update(e, e + Math.log10(fit), e > scaleBreaks);
+  lamina.update(e, seen, e > scaleBreaks);
 }
 /**
  * Adaptive quality: if frames run slow for a couple of seconds, render fewer pixels (down to 60%

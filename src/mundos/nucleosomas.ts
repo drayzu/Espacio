@@ -34,7 +34,7 @@ export function nucleosomas(): WorldModule {
       id: 'nucleosomas',
       territory: 'vida',
       name: 'Nucleosomas',
-      fact: 'El ADN se enrolla en proteínas: así caben dos metros en cada núcleo.',
+      fact: 'En cada una de tus células hay dos metros de esto, enrollado como hilo en carretes.',
       label: 'nucleosomas',
       unitExp: -8,
       frame: 8,

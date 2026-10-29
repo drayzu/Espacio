@@ -117,8 +117,9 @@ export function celula(): WorldModule {
     spec: {
       id: 'celula',
       territory: 'vida',
-      name: 'Célula eucariota',
-      fact: 'Unos cien billones de átomos.',
+      name: 'Una célula',
+      fact: 'Cien billones de átomos que trabajan juntos. Y están vivos.',
+      ficha: ['unos 10¹⁴ átomos en una célula'],
       label: 'célula',
       unitExp: -5,
       frame: 2.7,
@@ -378,7 +379,7 @@ export function celula(): WorldModule {
       // It divides. Closer to the nucleus while the chromosomes form and part, then back out to
       // see the new wall cross the cell.
       tl.set({ 'cel.div': 0, 'celula.aim': 0, 'celula.ax': NUCLEUS.x, 'celula.ay': NUCLEUS.y, 'celula.az': 0 });
-      tl.caption(9.4, 'Una célula se divide', 'Cada célula de esta hoja nació así: de otra que se dividió en dos.');
+      tl.caption(9.4, 'Una célula se divide', 'Así nació cada célula de esta hoja, y cada una de las tuyas: de otra que se partió en dos.');
       tl.to(2.2, { 'celula.aim': 1, 'cel.div': 0.2, e: w.home - 0.32 });
       tl.to(3.8, { 'cel.div': 0.76, e: w.home - 0.36 });
       // (The aim holds until the cell's own scale: below it, the chromatin's view would tilt it.)

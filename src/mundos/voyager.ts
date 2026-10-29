@@ -72,7 +72,8 @@ export function voyager(): WorldModule {
       id: 'voyager',
       territory: 'Sistema Solar',
       name: 'Voyager 1',
-      fact: 'Lo más lejos que ha llegado algo nuestro: salió del viento solar en 2012 y ya está a casi un día luz.',
+      fact: 'Lo más lejos que ha llegado algo nuestro. Salió hace casi cincuenta años y sigue.',
+      ficha: ['lanzada en 1977; salió del viento solar en 2012', 'hoy, a casi un día luz'],
       label: 'Voyager',
       unitExp: 13,
       frame: 6,
@@ -159,9 +160,10 @@ export function voyager(): WorldModule {
         'voyager.ty': toVoyager.y * k,
         'voyager.tz': toVoyager.z * k,
       });
-      tl.caption(5.6, 'Un punto azul pálido', 'Así vio la Tierra la Voyager 1 en 1990, desde seis mil millones de kilómetros: todo lo que conocemos, en un píxel.');
+      tl.caption(6.8, 'Un punto azul pálido', 'Así vio la Tierra la Voyager, desde seis mil millones de kilómetros. Todo lo que conoces cabe en un píxel.');
       tl.to(3.2, { e: PBD_E, fov: 6, ...PBD_VIEW, ...travel(1), pbd: 1 });
-      tl.to(2.4, { e: PBD_E - 0.02, ...PBD_VIEW_END });
+      // A long look (GUION.md 32).
+      tl.to(3.6, { e: PBD_E - 0.02, ...PBD_VIEW_END });
       // Back out: the framing returns to the Sun as the Oort cloud's arrival pulls away.
       tl.with(3.0, { ...travel(0), pbd: 0 });
     },

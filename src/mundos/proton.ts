@@ -114,7 +114,8 @@ export function proton(): WorldModule {
       id: 'proton',
       territory: 'subatómico',
       name: 'Protón',
-      fact: 'Tres quarks unidos por gluones: la fuerza más intensa que conocemos.',
+      fact: 'Tres quarks atados por la fuerza más intensa que conocemos. En tu cuerpo hay más de estos que estrellas en todo lo que se ve.',
+      ficha: ['unos 2 × 10²⁸ protones en un cuerpo de 70 kg', 'de 10²² a 10²⁴ estrellas en el universo observable'],
       label: 'protón',
       unitExp: -16,
       frame: 28,
@@ -233,7 +234,7 @@ export function proton(): WorldModule {
         return { 'proton.tx': d.x, 'proton.ty': d.y, 'proton.tz': d.z };
       };
       tl.set({ 'pro.pull': 0 });
-      tl.caption(7.4, 'Nadie ha visto un quark solo', 'Al separarlos, la fuerza no se debilita: la energía del tubo crece hasta romperlo, y con ella nacen dos quarks nuevos.');
+      tl.caption(7.4, 'Nadie ha visto un quark solo', 'Si tiras de uno, la cuerda no se afloja: se rompe, y de su energía nacen dos quarks nuevos. Nunca quedan solos.');
       tl.to(1.2, { ...along(2.5), e: w.home - 0.08 });
       tl.to(3.0, { ...along(5), 'pro.pull': 0.56, e: w.home - 0.02 });
       // The meson leaves the frame; the camera stays with the proton, whole again.

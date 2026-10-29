@@ -38,6 +38,10 @@ export interface Caption {
   to: number;
   name: string;
   fact: string;
+  /** Whose scale this is, for the line under the exponent (the opening's «tú»). */
+  escala?: string;
+  /** The plate's data for this moment (key I). */
+  ficha?: string[];
 }
 
 export class Timeline {
@@ -83,8 +87,8 @@ export class Timeline {
   }
 
   /** Names the moment starting at the cursor and lasting `dur` beats (the cursor stays). */
-  caption(dur: number, name: string, fact: string) {
-    this.captions.push({ from: this.cursor, to: this.cursor + dur, name: tx(name), fact: tx(fact) });
+  caption(dur: number, name: string, fact: string, escala?: string, ficha?: string[]) {
+    this.captions.push({ from: this.cursor, to: this.cursor + dur, name: tx(name), fact: tx(fact), escala: escala && tx(escala), ficha: ficha?.map(tx) });
     return this;
   }
 

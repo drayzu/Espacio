@@ -123,7 +123,8 @@ export function grupoLocal(): WorldModule {
       id: 'grupoLocal',
       territory: 'galaxias',
       name: 'El Grupo Local',
-      fact: 'Andrómeda viene hacia nosotros: su halo de gas ya toca el nuestro, y en unos 4 500 millones de años chocarán.',
+      fact: 'Andrómeda viene hacia nosotros. Quizá algún día las dos galaxias sean una.',
+      ficha: ['el halo de gas de Andrómeda ya toca el nuestro', 'chocar en 10 000 millones de años: ≈ 50 % (Sawala y otros, 2025)', 'Andrómeda, a 2,5 millones de años luz; Homo sapiens, unos 300 000 años'],
       label: 'Grupo Local',
       unitExp: 21,
       nameSpan: 0.6,
@@ -264,7 +265,7 @@ export function grupoLocal(): WorldModule {
       // (Pulling back a little on the way, so both galaxies stay in sight across the gap.)
       tl.to(1.7, { e: w.home + 0.12, ...at(M31.clone().multiplyScalar(0.6)), yaw: 0.36, pitch: -0.12, fov: 44 });
       tl.to(1.9, { e: w.home - 0.55, ...at(M31), yaw: 0.4, pitch: -0.3 });
-      tl.caption(2.6, 'Andrómeda', 'Un billón de estrellas a dos millones y medio de años luz: lo más lejano que suele verse a simple vista.');
+      tl.caption(2.6, 'Andrómeda', 'Un billón de estrellas: lo más lejos que puedes ver sin telescopio. Su luz salió cuando todavía no había nadie como tú.');
       tl.to(2.6, { e: w.home - 0.5, yaw: 0.55, pitch: -0.25 });
       // Then out, until both haloes show, while the collision to come draws itself.
       tl.set({ 'gl.crash': 0 });

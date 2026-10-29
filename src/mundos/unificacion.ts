@@ -53,7 +53,7 @@ export function unificacion(): WorldModule {
       id: 'unificacion',
       territory: 'hipotético',
       name: 'La gran unificación',
-      fact: 'Hipótesis: a esta escala, la fuerza nuclear fuerte, la débil y el electromagnetismo serían una sola fuerza.',
+      fact: 'Un poco más arriba, quizá, tres de las fuerzas de la naturaleza son una sola.',
       label: 'unificación',
       unitExp: UNIT,
       frame: 3,

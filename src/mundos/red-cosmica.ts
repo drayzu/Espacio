@@ -29,7 +29,7 @@ export function redCosmica(): WorldModule {
       id: 'redCosmica',
       territory: 'galaxias',
       name: 'La red cósmica',
-      fact: 'Las galaxias no están repartidas al azar: forman hilos y paredes alrededor de inmensos vacíos.',
+      fact: 'Las galaxias no están repartidas al azar: forman hilos alrededor de vacíos inmensos.',
       label: 'red cósmica',
       unitExp: 23,
       frame: 70,
@@ -195,7 +195,7 @@ export function redCosmica(): WorldModule {
       tl.label('redCosmica');
       // Laniakea: the flow of the galaxies draws itself towards the Great Attractor.
       tl.set({ 'lan.form': 0 });
-      tl.caption(6.6, 'Laniakea', '«Cielo inmenso»: cien mil galaxias que caen hacia el Gran Atractor. La nuestra va en un borde.');
+      tl.caption(6.6, 'Laniakea', '«Cielo inmenso»: cien mil galaxias que caen juntas. La nuestra va en un borde.');
       // Seen side on (the Great Attractor to one side, Virgo above), framed between us and it.
       const mid = ATTRACTOR.clone().multiplyScalar(0.4);
       tl.to(3.8, { 'lan.form': 1, yaw: -0.9, pitch: 0.35, e: w.home - 0.02, fov: 48, 'redCosmica.tx': mid.x, 'redCosmica.ty': mid.y, 'redCosmica.tz': mid.z });

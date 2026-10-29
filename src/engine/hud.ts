@@ -3,8 +3,8 @@ import type { World } from './cadena';
 import { lang } from '../i18n';
 
 /**
- * The quiet interface: intro, world name + one sentence, the scale exponent, and a ruler of the
- * whole journey grouped by territory. The ruler measures the journey (progress), not the scale:
+ * The quiet interface: the title (which arrives with the foam, after the opening), world name + one
+ * sentence, the scale exponent, and a ruler of the whole journey grouped by territory. The ruler measures the journey (progress), not the scale:
  * otherwise 17 empty orders of magnitude would take most of it. Clicking a world travels there.
  */
 
@@ -73,7 +73,15 @@ export interface HudActions {
 }
 
 /** What the name and sentence lines show: a world, or a moment's own caption. */
-type Named = { name: string; fact: string };
+type Named = { name: string; fact: string; escala?: string; ficha?: string[] };
+
+/** The opening's share of the interface: the title (0 → 1 comes, 1 → 2 goes) and the chrome around the film (0..1). */
+export interface Portada {
+  titulo: number;
+  cromo: number;
+  /** The card that hands on to Tiempo, at the end (0..1). */
+  relevo?: number;
+}
 
 export function createHud(
   worlds: World[],
@@ -86,9 +94,12 @@ export function createHud(
   const { jump, togglePlay } = act;
   const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s)!;
   const intro = $('#intro');
+  const cue = $('.cue');
+  const brand = $('.brand');
   const hud = $('.hud');
   const nameEl = $('#name');
   const factEl = $('#fact');
+  const fichaEl = $('#ficha');
   const expEl = $('#exp');
   const unitEl = $('#unit');
   const ruler = $('#ruler');
@@ -106,6 +117,8 @@ export function createHud(
   const showPlate = (on: boolean) => {
     plateBtn.classList.toggle('is-on', on);
     plateBtn.setAttribute('aria-pressed', String(on));
+    // With the plate on, the figures the sentence leaves out show under it.
+    hud.classList.toggle('con-lamina', on);
   };
   plateBtn.addEventListener('click', () => showPlate(act.togglePlate()));
 
@@ -154,16 +167,19 @@ export function createHud(
 
   let shown: Named | null | undefined;
   return {
-    /** `seen`: log10 of the height actually on screen, when the framing shows more than `e`. */
-    update(e: number, p: number, playing: boolean, seen = e) {
-      const introOut = smoothstep(0.05, 0.6, p);
-      intro.style.opacity = String(1 - introOut);
-      intro.style.transform = `translateY(${-introOut * 40}px)`;
-      hud.style.opacity = String(introOut);
-      ruler.style.opacity = String(introOut);
-      const ending = p > length - 0.6;
-      outro.classList.toggle('is-in', ending);
-      hud.classList.toggle('is-ending', ending);
+    /**
+     * `seen`: log10 of the height actually on screen, when the framing shows more than `e`.
+     * `portada`: the title and the chrome, as the opening has them at this point.
+     */
+    update(e: number, p: number, playing: boolean, seen = e, portada: Portada = { titulo: 0, cromo: 1 }) {
+      // The title comes (0 → 1) and goes (1 → 2), rising a little all the while.
+      const t = portada.titulo;
+      intro.style.opacity = String(smoothstep(0, 1, t) * (1 - smoothstep(1, 2, t)));
+      intro.style.transform = `translateY(${t < 1 ? (1 - t) * 16 : -(t - 1) * 24}px)`;
+      cue.style.opacity = String(1 - smoothstep(0.05, 0.6, p));
+      brand.style.opacity = String(portada.cromo);
+      ruler.style.opacity = String(portada.cromo);
+      outro.classList.toggle('is-in', (portada.relevo ?? 0) > 0.5);
 
       const special = worlds.find((w) => w.scaleLabel && Math.abs(e - w.home) < (w.nameSpan ?? 0.4));
       if (special?.scaleLabel) {
@@ -176,7 +192,10 @@ export function createHud(
       marker.style.top = at(p);
 
       // A moment's caption takes the place of the world's name while it lasts.
-      const near: Named | null = captionAt(p) ?? worlds.find((w) => Math.abs(e - w.home) < (w.nameSpan ?? 0.4)) ?? null;
+      const caption = captionAt(p);
+      // Some moments say whose scale this is: «tú · ≈ 1 m de alto».
+      if (caption?.escala && !special) unitEl.textContent = `${caption.escala} · ${human(seen)}`;
+      const near: Named | null = caption ?? worlds.find((w) => Math.abs(e - w.home) < (w.nameSpan ?? 0.4)) ?? null;
       // The ruler names only where you are (and what the pointer is on): the world whose stretch
       // of the journey (from its arrival on) you are in.
       let closest = 0;
@@ -188,12 +207,15 @@ export function createHud(
         shown = near;
         nameEl.classList.remove('is-in');
         factEl.classList.remove('is-in');
+        fichaEl.classList.remove('is-in');
         setTimeout(() => {
           nameEl.textContent = near?.name ?? '';
           factEl.textContent = near?.fact ?? '';
+          fichaEl.replaceChildren(...(near?.ficha ?? []).map((t) => Object.assign(document.createElement('p'), { textContent: t })));
           if (near) {
             nameEl.classList.add('is-in');
             factEl.classList.add('is-in');
+            fichaEl.classList.add('is-in');
             act.arrive();
           }
         }, 250);

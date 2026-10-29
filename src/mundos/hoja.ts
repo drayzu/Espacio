@@ -68,7 +68,7 @@ export function hoja(): WorldModule {
       id: 'hoja',
       territory: 'vida',
       name: 'Una hoja',
-      fact: 'Una red de nervaduras lleva agua a cada una de sus millones de células.',
+      fact: 'Sus nervaduras llevan agua a millones de células, como tus venas a las tuyas.',
       label: 'hoja',
       unitExp: -3,
       frame: 100,

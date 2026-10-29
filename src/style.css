@@ -52,6 +52,8 @@ body {
   text-align: center;
   gap: 18px;
   pointer-events: none;
+  /* It arrives with the foam, after the opening. */
+  opacity: 0;
   /* The foam glows behind the title: a soft shadow keeps the small lines legible over it. */
   text-shadow: 0 0 14px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.9);
 }
@@ -77,6 +79,15 @@ body {
   letter-spacing: -0.03em;
 }
 
+.kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: -4px;
+}
+
 .lede {
   font-family: var(--serif);
   font-style: italic;
@@ -84,8 +95,13 @@ body {
   color: rgba(236, 231, 219, 0.85);
 }
 
+/* Under the point that opens the journey. */
 .cue {
-  margin-top: 28px;
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 56px);
+  transform: translateX(-50%);
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -118,11 +134,33 @@ body {
   }
 }
 
+/* The powers of ten of the opening's tunnel, each over its ring. */
+.potencias {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.potencias span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  white-space: nowrap;
+  opacity: 0;
+}
+
 /* ---------- Chrome ---------- */
+/* The brand and the ruler come with the title. */
 .brand {
   position: fixed;
   top: 28px;
   left: 32px;
+  opacity: 0;
 }
 
 .brand-name {
@@ -370,16 +408,32 @@ body {
   transition: opacity 0.8s 0.15s;
 }
 
+/* The plate's data: only with the plate on (key I). */
+#ficha {
+  max-width: 440px;
+  margin: -6px 0 14px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--dim);
+  display: none;
+  opacity: 0;
+  transition: opacity 0.8s 0.25s;
+}
+
+.hud.con-lamina #ficha {
+  display: block;
+}
+
+#ficha.is-in {
+  opacity: 1;
+}
+
 #name.is-in,
 #fact.is-in {
   opacity: 1;
   transform: none;
-}
-
-/* The closing line takes over: the last world's name steps aside. */
-.hud.is-ending #name,
-.hud.is-ending #fact {
-  opacity: 0;
 }
 
 #exp {
@@ -410,6 +464,7 @@ body {
   bottom: 16vh;
   width: 1px;
   background: var(--faint);
+  opacity: 0;
 }
 
 .band {
@@ -499,10 +554,12 @@ body {
 }
 
 /* ---------- Outro ---------- */
+/* The card that hands on to Tiempo, under the point it now is (in Tiempo's blue). */
 #outro {
+  --tiempo: #8fb4ff;
   position: fixed;
   left: 50%;
-  top: 9vh;
+  top: calc(50% + 44px);
   transform: translate(-50%, 10px);
   width: min(560px, calc(100% - 32px));
   text-align: center;
@@ -515,22 +572,58 @@ body {
 #outro.is-in {
   opacity: 1;
   transform: translate(-50%, 0);
+  pointer-events: auto;
 }
 
 .outro-k {
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 12px;
+  color: var(--dim);
+  margin-bottom: 4px;
+}
+
+.outro-obra {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  color: inherit;
+  text-decoration: none;
 }
 
 .outro-t {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 24px;
-  line-height: 1.3;
+  font-size: clamp(44px, 6vw, 64px);
+  line-height: 1;
+  color: var(--tiempo);
+}
+
+.outro-q {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 19px;
+  color: rgba(236, 231, 219, 0.8);
+}
+
+.outro-go {
+  margin-top: 18px;
+  padding: 9px 22px;
+  border: 1px solid rgba(143, 180, 255, 0.5);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tiempo);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.outro-obra:hover .outro-go,
+.outro-obra:focus-visible .outro-go {
+  background: rgba(143, 180, 255, 0.14);
+  border-color: var(--tiempo);
 }
 
 @media (max-width: 720px) {

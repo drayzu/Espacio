@@ -15,11 +15,13 @@
     <canvas id="scene"></canvas>
     <div id="spacer"></div>
 
+    <!-- The title arrives with the foam, after the opening (src/engine/apertura.ts). -->
     <section id="intro">
+      <p class="kicker">Horizontes · 01</p>
       <h1 data-i18n>Espacio</h1>
       <p class="lede" data-i18n>De un quark al borde de todo.</p>
-      <p class="cue" data-i18n>Desliza para empezar<span class="cue-line"></span></p>
     </section>
+    <p class="cue" data-i18n>Desliza para empezar<span class="cue-line"></span></p>
 
     <header class="brand">
       <span class="brand-name" data-i18n>Espacio</span>
@@ -39,14 +41,20 @@
     <div class="hud">
       <div id="name"></div>
       <div id="fact"></div>
+      <div id="ficha"></div>
       <div id="exp"></div>
       <div id="unit"></div>
     </div>
     <nav id="ruler" aria-label="Escala" data-i18n-label><div id="marker"></div></nav>
 
+    <!-- The coda hands on to the next piece of the series (src/engine/coda.ts). -->
     <section id="outro">
-      <p class="outro-k" data-i18n>Fin del viaje</p>
-      <p class="outro-t" data-i18n>De la espuma de Planck a todas las matemáticas posibles: más de sesenta órdenes de magnitud, y todo hecho de algo más pequeño.</p>
+      <p class="outro-k" data-i18n>Continúa en</p>
+      <a class="outro-obra" href="https://drayzu.github.io/Tiempo/">
+        <span class="outro-t">Tiempo</span>
+        <span class="outro-q" data-i18n>De antes del Big Bang a la última luz.</span>
+        <span class="outro-go" data-i18n>Entrar</span>
+      </a>
     </section>
 
     <script type="module" src="/src/main.ts"></script>

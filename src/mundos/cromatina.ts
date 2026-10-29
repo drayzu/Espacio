@@ -70,7 +70,7 @@ export function cromatina(): WorldModule {
       id: 'cromatina',
       territory: 'vida',
       name: 'Cromatina',
-      fact: 'Cada hebra es ADN plegado una y otra vez.',
+      fact: 'El mismo hilo, plegado sobre sí mismo una y otra vez.',
       label: 'cromatina',
       unitExp: -6,
       frame: 3,

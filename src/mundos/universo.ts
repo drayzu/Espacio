@@ -39,7 +39,8 @@ export function universo(): WorldModule {
       id: 'universo',
       territory: 'universo',
       name: 'El universo observable',
-      fact: 'Todo lo que podremos ver jamás. Más allá de este borde, la luz aún no ha tenido tiempo de llegar.',
+      fact: 'Todo lo que podrás ver jamás. Más allá, la luz no ha tenido tiempo de llegar.',
+      ficha: ['radio: 46 000 millones de años luz', 'el fondo de microondas: luz de cuando el universo tenía 380 000 años'],
       label: 'universo',
       unitExp: 25,
       frame: 105,
@@ -238,7 +239,7 @@ export function universo(): WorldModule {
       // us are hidden: we look out from inside them.
       const aimAt = (f: number) => ({ 'universo.ax': DEEP.x * f, 'universo.ay': DEEP.y * f, 'universo.az': DEEP.z * f });
       tl.set({ 'uni.deep': 0, 'universo.aim': 0, 'universo.keep': 0, 'grupoLocal.keep': 0, 'redCosmica.keep': 0, ...aimAt(0.3) });
-      tl.caption(13.2, 'Un grano de arena de cielo', 'Un telescopio apunta a un trocito de cielo oscuro, como un grano de arena a un brazo de distancia: hay unas diez mil galaxias.');
+      tl.caption(13.2, 'Un grano de arena de cielo', 'Un trocito de cielo oscuro, del tamaño de un grano de arena a un brazo de distancia: diez mil galaxias.');
       tl.to(2.6, { e: deepE(0.3, 46), fov: 46, 'universo.aim': 1, 'universo.keep': 1, 'grupoLocal.keep': -1, 'redCosmica.keep': -1, 'uni.deep': 1, ...DEEP_VIEW });
       const STEPS = 8;
       for (let k = 1; k <= STEPS; k++) {
@@ -268,11 +269,16 @@ export function universo(): WorldModule {
         'redCosmica.tz': WALL.z * 100 * k,
       });
       tl.set({ 'uni.wall': 0 });
-      tl.caption(5.4, 'La luz más antigua', 'El fondo de microondas: luz que salió cuando el universo tenía 380 000 años y viajó 13 800 millones de años hasta aquí.');
+      tl.caption(5.4, 'La luz más antigua', 'Luz que salió cuando el universo tenía 380 000 años, y que te llega ahora.');
       tl.to(3.0, { ...at(1), e: w.home - 0.6, ...WALL_VIEW, fov: 52, 'uni.wall': 1 });
       tl.to(2.4, { e: w.home - 0.57, ...WALL_VIEW_END });
       // Then back out to the whole sphere, turning slowly.
       tl.to(3.6, { ...at(0), yaw: 1.0, pitch: 0.4, roll: 0, e: w.home + 0.05, fov: 48, 'uni.wall': 0 });
+      // GUION.md 47 · At the centre: the whole sphere, and you at its centre, where whoever looks always is.
+      tl.caption(5.4, 'En el centro', 'Y en el centro de todo esto estás tú. No porque seas especial: el centro de lo que se ve siempre es quien mira.');
+      tl.with(1.2, { tu: 1 });
+      tl.to(4.2, { yaw: 1.25, pitch: 0.42, e: w.home + 0.08 });
+      tl.to(1.2, { tu: 0, yaw: 1.32, e: w.home + 0.09 });
     },
   };
 }

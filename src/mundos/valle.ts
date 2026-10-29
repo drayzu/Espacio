@@ -49,7 +49,7 @@ export function valle(): WorldModule {
       id: 'valle',
       territory: 'Tierra',
       name: 'Un valle',
-      fact: 'Millones de árboles, y bajo cada uno, raíces, hojas y células.',
+      fact: 'Un valle en el sur de Chile. Millones de árboles, y bajo cada uno, raíces, hojas y células.',
       label: 'valle',
       unitExp: 3,
       anchor: TIERRA.anchor,
